@@ -7,8 +7,21 @@
     </head>
     <body>
         <h1>SplitSHARE</h1>
+        <hr>
+
+        <form action="{{ url_for('groups') }}" method="POST">
+            <button type="submit" name="action" value="create_code">Create Code</button>
+        </form>
+        {% if qr_code_url %}
+            <h2>Generated QR Code:</h2>
+            <img src="{{ qr_code_url }}" alt="Generated QR Code">
+        {% endif %}
 
         
+        
+        <a href="{{ url_for('mainF') }}"> 
+            To main function 
+        </a>
 
     </body>
 </html>
