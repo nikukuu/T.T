@@ -1,12 +1,18 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Account</title>
-    </head>
-    <body>
-        <h1>Hell-o</h1>
-
-    </body>
+    <title>Profile</title>
+</head>
+<body>
+    <h1>Profile</h1>
+    {% if user %}
+        <p>Username: {{ user.username }}</p>
+        <p>Email: {{ user.email }}</p>
+    {% else %}
+        <p>User information could not be retrieved.</p>
+    {% endif %}
+    <a href="{{ url_for('logout') }}">Logout</a>
+</body>
 </html>
