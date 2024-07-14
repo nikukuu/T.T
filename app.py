@@ -1,9 +1,9 @@
-import threading
-import time
 from flask import Flask, render_template, url_for, redirect, request, session,g
 import os
 from flask_mysqldb import MySQL
 import MySQLdb.cursors
+import threading
+import time
 import qrcode
 import cv2
 import webbrowser
@@ -24,10 +24,12 @@ def require_login():
     if 'username' not in session and request.endpoint not in allowed_routes:
         return redirect(url_for('login'))
 
+#main
 @app.route('/')
 def base():
     return render_template('base.html')
 
+#login
 @app.route('/login', methods=['POST', 'GET'])
 def login():
     if request.method == 'POST':
@@ -48,6 +50,7 @@ def login():
             return render_template('base.html', error='Invalid or wrong password')
     return render_template('base.html')
 
+#sign up
 @app.route('/sign-up', methods=['POST', 'GET'])
 def sign_up():
     if request.method == 'POST':
@@ -63,14 +66,15 @@ def sign_up():
         return redirect(url_for('login'))
     return render_template('sign_up.html')
 
-
+#dashboard
 @app.route('/home')
 def home():
     if 'username' in session:
         return render_template('home.html')
     else:
         return redirect(url_for('login'))
-    
+
+#user profile    
 @app.route('/profile')
 def profile():
     if 'username' in session:
@@ -86,31 +90,42 @@ def profile():
             return redirect(url_for('login'))
     else:
         return redirect(url_for('login'))
-    
+
+#logout    
 @app.route('/logout')
 def logout():
     session.pop('username', None)
     session.pop('email', None)
     return render_template('base.html')
 
+#qr generator and main function
 @app.route('/groups', methods=['POST', 'GET'])
 def groups():
     qr_code_url = None
     if request.method == 'POST' and request.form.get('action') == 'create_code':
-        img = qrcode.make("hello world")
-        base_dir = os.path.dirname(__file__)
-        static_dir = os.path.join(base_dir, 'static')
-        if not os.path.exists(static_dir):
-            os.makedirs(static_dir)
-        filename = f"kyuar_{int(time.time())}.png"
-        file_path = os.path.join(static_dir, filename)
-        img.save(file_path)
-        qr_code_url = url_for('static', filename=filename)
+        if 'username' in session:
+            username = session['username']
+            room_id = int(time.time())  # Unique room_id based on timestamp
+            join_url = url_for('join', room_id=room_id, username=username, _external=True)
 
+            img = qrcode.make(join_url)
+            base_dir = os.path.dirname(__file__)
+            static_dir = os.path.join(base_dir, 'static')
+    
+            if not os.path.exists(static_dir):
+                os.makedirs(static_dir)
+            
+            filename = f"kyuar_{room_id}.png"  # Unique filename based on room_id
+            file_path = os.path.join(static_dir, filename)
+            
+            img.save(file_path)
+            
+            qr_code_url = url_for('static', filename=filename)
+            
     return render_template('groups.html', qr_code_url=qr_code_url)
 
-
-@app.route('/join', methods=['GET'])
+#join a room
+@app.route('/join/<int:room_id>/<username>', methods=['GET'])
 def join(room_id, username):
     if 'username' in session and session['username'] == username:
         cur = mysql.connection.cursor()
@@ -121,6 +136,7 @@ def join(room_id, username):
     else:
         return redirect(url_for('login'))
 
+#qr scanner
 @app.route('/code')
 def code():
     def open_qr_scanner():
@@ -151,6 +167,7 @@ def code():
     threading.Thread(target=open_qr_scanner).start()
     return render_template('code.html')
 
+#main function
 @app.route('/mainF')
 def mainF():
     return render_template('mainF.html')
