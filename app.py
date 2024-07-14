@@ -20,7 +20,7 @@ mysql = MySQL(app)
 
 @app.before_request
 def require_login():
-    allowed_routes = ['login', 'sign_up', 'base', 'mainF', 'code']
+    allowed_routes = ['login', 'sign_up', 'base', 'mainF', 'code', 'room']
     if 'username' not in session and request.endpoint not in allowed_routes:
         return redirect(url_for('login'))
 
