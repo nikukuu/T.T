@@ -18,36 +18,6 @@ app.config['MYSQL_DB'] = "splitshare"
 
 mysql = MySQL(app)
 
-cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
-if not cap.isOpened():
-    print("Error: Could not open video device")
-    exit()
-
-detector = cv2.QRCodeDetector()
-a = None
-
-while True:
-    success, img = cap.read()
-
-    if not success:
-        print("Failed to capture frame")
-        continue
-
-    data, bbox, _ = detector.detectAndDecode(img)
-    if data:
-        a = data
-        break
-
-    cv2.imshow('qr scanner', img)
-    if cv2.waitKey(1) == ord('c'):
-        break
-
-if a:
-    webbrowser.open(a)
-
-cap.release()
-cv2.destroyAllWindows()
-
 @app.before_request
 def require_login():
     allowed_routes = ['login', 'sign_up', 'base', 'mainF', 'code']
