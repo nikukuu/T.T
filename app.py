@@ -98,41 +98,82 @@ def logout():
     session.pop('email', None)
     return render_template('base.html')
 
-#qr generator and main function
+# qr generator and main function
 @app.route('/groups', methods=['POST', 'GET'])
 def groups():
     qr_code_url = None
-    if request.method == 'POST' and request.form.get('action') == 'create_code':
+    if request.method == 'POST' and request.form.get('action') == 'create_group':
         if 'username' in session:
             username = session['username']
-            room_id = int(time.time())  # Unique room_id based on timestamp
-            join_url = url_for('join', room_id=room_id, username=username, _external=True)
+            group_name = request.form['group_name']
+            room_id = int(time.time())
 
+            cur = mysql.connection.cursor()
+            cur.execute("INSERT INTO rooms (room_id, group_name, username) VALUES (%s, %s, %s)", (room_id, group_name, username))
+            mysql.connection.commit()
+            cur.close()
+
+            session['room_id'] = room_id
+
+            join_url = url_for('join', room_id=room_id, _external=True)
             img = qrcode.make(join_url)
             base_dir = os.path.dirname(__file__)
             static_dir = os.path.join(base_dir, 'static')
-    
+
             if not os.path.exists(static_dir):
                 os.makedirs(static_dir)
             
-            filename = f"kyuar_{room_id}.png"  # Unique filename based on room_id
+            filename = f"kyuar_{room_id}.png"
             file_path = os.path.join(static_dir, filename)
             
             img.save(file_path)
             
             qr_code_url = url_for('static', filename=filename)
+
+            cur = mysql.connection.cursor()
+            cur.execute("INSERT INTO members (room_id, username) VALUES (%s, %s)", (room_id, username))
+            mysql.connection.commit()
+            cur.close()
             
     return render_template('groups.html', qr_code_url=qr_code_url)
 
 #join a room
-@app.route('/join/<int:room_id>/<username>', methods=['GET'])
-def join(room_id, username):
-    if 'username' in session and session['username'] == username:
-        cur = mysql.connection.cursor()
-        cur.execute("INSERT INTO members (room_id, username) VALUES (%s, %s)", (room_id, username))
-        mysql.connection.commit()
+@app.route('/join/<int:room_id>', methods=['GET'])
+def join(room_id):
+    if 'username' in session:
+        username = session['username']
+        cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        
+        cur.execute("SELECT * FROM members WHERE room_id = %s AND username = %s", (room_id, username))
+        member = cur.fetchone()
+        if not member:
+            cur.execute("INSERT INTO members (room_id, username) VALUES (%s, %s)", (room_id, username))
+            mysql.connection.commit()
+
+        cur.execute("SELECT * FROM expenses WHERE room_id = %s", (room_id,))
+        expenses = cur.fetchall()
+
+        cur.execute("SELECT username FROM members WHERE room_id = %s", (room_id,))
+        members = cur.fetchall()
+
         cur.close()
-        return render_template('room.html', message=f"User {username} has joined room {room_id}")
+
+        debts = []
+        for expense in expenses:
+            split_amount = expense['amount'] / len(members)
+            for member in members:
+                if member['username'] != expense['paid_by']:
+                    debts.append({
+                        'description': expense['description'],
+                        'amount': expense['amount'],
+                        'paid_by': expense['paid_by'],
+                        'borrower': member['username'],
+                        'split_amount': split_amount
+                    })
+
+        has_expenses = len(expenses) > 0
+        
+        return render_template('room.html', room_id=room_id, debts=debts, expenses=expenses, has_expenses=has_expenses, members=members)
     else:
         return redirect(url_for('login'))
 
@@ -170,7 +211,68 @@ def code():
 #main function
 @app.route('/mainF')
 def mainF():
-    return render_template('mainF.html')
+    if 'username' in session:
+        cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+        cur.execute("SELECT room_id FROM rooms ORDER BY room_id DESC LIMIT 1")
+        room = cur.fetchone()
+        
+        if room:
+            room_id = room['room_id']
+            session['room_id'] = room_id
+
+            cur.execute("SELECT username FROM members WHERE room_id = %s", (room_id,))
+            members = cur.fetchall()
+        else:
+            room_id = None
+            members = []
+        
+        cur.close()
+        
+        success = request.args.get('success', None)
+        
+        return render_template('mainF.html', room_id=room_id, members=members, success=success)
+    else:
+        return redirect(url_for('login'))
+
+#calculation
+@app.route('/add_expense', methods=['POST'])
+def add_expense():
+    if 'username' in session:
+        description = request.form['description']
+        expense = float(request.form['expense'])
+        paid_by = request.form['paid_by']
+        room_id = session.get('room_id')
+
+        if room_id:
+            cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+            cur.execute("INSERT INTO expenses (room_id, description, amount, paid_by) VALUES (%s, %s, %s, %s)", (room_id, description, expense, paid_by))
+
+            cur.execute("SELECT username FROM members WHERE room_id = %s", (room_id,))
+            members = cur.fetchall()
+            
+            num_members = len(members)
+            split_amount = expense / num_members
+
+            for member in members:
+                borrower = member['username']
+                if borrower != paid_by:
+                    
+                    cur.execute("SELECT COUNT(*) FROM debts WHERE room_id = %s AND lender = %s AND borrower = %s", (room_id, paid_by, borrower))
+                    exists = cur.fetchone()['COUNT(*)']
+
+                    if not exists:
+                        cur.execute("INSERT INTO debts (room_id, lender, borrower, amount) VALUES (%s, %s, %s, %s)", (room_id, paid_by, borrower, split_amount))
+
+            mysql.connection.commit()
+            cur.close()
+
+            return redirect(url_for('mainF', success=True))
+        else:
+            return redirect(url_for('mainF', success=False))
+    else:
+        return redirect(url_for('login'))
 
 if __name__ == '__main__':
     app.run(debug=True)
