@@ -70,7 +70,57 @@ def sign_up():
 @app.route('/home')
 def home():
     if 'username' in session:
-        return render_template('home.html')
+        username = session['username']
+        cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        
+        # Get the rooms the user has joined
+        cur.execute("""
+            SELECT r.room_id, r.group_name
+            FROM rooms r
+            JOIN members m ON r.room_id = m.room_id
+            WHERE m.username = %s
+        """, (username,))
+        rooms = cur.fetchall()
+
+        # Get the expenses associated with the rooms the user has joined
+        cur.execute("""
+            SELECT e.room_id, e.description, e.amount, e.paid_by
+            FROM expenses e
+            JOIN rooms r ON e.room_id = r.room_id
+            WHERE e.room_id IN (
+                SELECT room_id FROM members WHERE username = %s
+            )
+        """, (username,))
+        expenses = cur.fetchall()
+
+        # Get members of all rooms the user has joined
+        cur.execute("""
+            SELECT m.room_id, m.username
+            FROM members m
+            JOIN rooms r ON m.room_id = r.room_id
+            WHERE m.room_id IN (
+                SELECT room_id FROM members WHERE username = %s
+            )
+        """, (username,))
+        members = cur.fetchall()
+
+        cur.close()
+
+        # Organize data by room
+        rooms_dict = {room['room_id']: room['group_name'] for room in rooms}
+        expenses_dict = {}
+        for expense in expenses:
+            if expense['room_id'] not in expenses_dict:
+                expenses_dict[expense['room_id']] = []
+            expenses_dict[expense['room_id']].append(expense)
+
+        members_dict = {}
+        for member in members:
+            if member['room_id'] not in members_dict:
+                members_dict[member['room_id']] = []
+            members_dict[member['room_id']].append(member['username'])
+
+        return render_template('home.html', username=username, rooms_dict=rooms_dict, expenses_dict=expenses_dict, members_dict=members_dict)
     else:
         return redirect(url_for('login'))
 
