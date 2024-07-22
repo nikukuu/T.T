@@ -4,23 +4,25 @@
         <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Groups</title>
+    <link rel="stylesheet" href="/static/css/group.css">
     </head>
     <body>
         <h1>SplitSHARE</h1>
         <hr>
 
-        <h1>Create Group</h1>
         <form action="{{ url_for('groups') }}" method="POST">
-            <label for="group_name">Group Name:</label>
-            <input type="text" id="group_name" name="group_name" required>
-            <button type="submit" name="action" value="create_group">Create Group</button>
+            <button type="submit" name="action" value="create_code">Create Code</button>
         </form>
-
         {% if qr_code_url %}
-            <h2>QR Code for Group:</h2>
-            <img src="{{ qr_code_url }}" alt="QR Code">
-            <a href="{{ url_for('mainF') }}">Go to Main Function</a>
+            <h2>Generated QR Code:</h2>
+            <img src="{{ qr_code_url }}" alt="Generated QR Code">
         {% endif %}
+
+        
+        
+        <a href="{{ url_for('mainF') }}"> 
+            To main function 
+        </a>
 
     </body>
 </html>
