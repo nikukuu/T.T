@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main Function</title>
+</head>
+
+<body>
+    <h1>Main Function</h1>
+
+    {% if success == 'True' %}
+        <p>Expense successfully added!</p>
+    {% elif success == 'False' %}
+        <p>Failed to add expense. Please try again.</p>
+    {% endif %}
+
+    <hr>
+
+    {% if room_id %}
+        <p>Room ID: {{ room_id }}</p>
+        <h2>Members who have joined:</h2>
+        <ul>
+            {% for member in members %}
+                <li>{{ member.username }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No rooms have been created yet.</p>
+    {% endif %}
+    
+    <hr>
+
+    <form action="{{ url_for('add_expense') }}" method="POST">
+        <p>Enter description:</p>
+        <input type="text" name="description" required>
+        <p>Expense: ₱<input type="number" step="0.01" name="expense" required></p>
+        <p>Paid by:
+            <select name="paid_by" required>
+                {% for member in members %}
+                    <option value="{{ member.username }}">{{ member.username }}</option>
+                {% endfor %}
+            </select>
+        </p>
+        <button type="submit">Add Expense</button>
+    </form>
+</body>
+</html>

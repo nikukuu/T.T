@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Room {{ room_id }}</title>
+</head>
+<body>
+    <h1>Room {{ room_id }}</h1>
+
+    {% if has_expenses %}
+        {% for expense in expenses %}
+            <h2>{{ expense.description }}</h2>
+            <p>Amount: ₱{{ expense.amount }}</p>
+            <p>{{ expense.paid_by }} paid ₱{{ expense.amount }}</p>
+            <ul>
+                {% for member in members %}
+                    {% if member.username != expense.paid_by %}
+                        <li>{{ member.username }} owes ₱{{ expense.amount / members|length }}</li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        {% endfor %}
+    {% else %}
+        <p>Please wait for the receipt and refresh or come back later.</p>
+    {% endif %}
+</body>
+</html>
