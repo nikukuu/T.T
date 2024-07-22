@@ -1,0 +1,42 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Open Sans', sans-serif;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: #f0f4f8; /* Light background color */
+    color: #333; /* Dark text color */
+}
+
+h1 {
+    font-size: 3rem;
+    margin-bottom: 2rem;
+    color: #00a9e0; /* Blue color from the logo */
+    text-align: center;
+}
+
+a {
+    display: block;
+    margin: 1rem 0;
+    padding: 0.75rem 1.5rem;
+    background-color: #00a9e0; /* Blue color from the logo */
+    color: #fff;
+    text-decoration: none;
+    border-radius: 4px;
+    text-align: center;
+    width: 200px;
+    transition: background-color 0.3s;
+}
+
+a:hover {
+    background-color: #007bb5; /* Darker blue for hover effect */
+}
