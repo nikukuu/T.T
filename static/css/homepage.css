@@ -19,6 +19,10 @@ body {
 nav{
     background-color: white;
     box-shadow: 3px 3px 5px rgba(0, 0, 0, 0, 1);
+    padding: 5px 20px;
+    display: flex;
+    align-items: center;
+
 }
 
 nav ul{
