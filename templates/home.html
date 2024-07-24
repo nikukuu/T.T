@@ -4,55 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
-    <link rel="stylesheet" href="/static/css/home.css">
 </head>
 <body>
     <h1>Welcome, {{ username }}!</h1>
+    
+    <div>
+        <h2>Overall Amount You Owe</h2>
+        <p>₱{{ total_owed }}</p>
+    </div>
 
-    <h2>Your Groups and Expenses</h2>
+    <div>
+        <h2>Users Who Owe You Money</h2>
+        {% if lenders %}
+            <ul>
+                {% for lender in lenders %}
+                    <li>{{ lender['lender'] }} - ₱{{ lender['total_amount'] }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No users owe you money.</p>
+        {% endif %}
+    </div>
 
-    {% if rooms_dict %}
-        {% for room_id, group_name in rooms_dict.items() %}
-            <h3>{{ group_name }}</h3>
-            {% if expenses_dict[room_id] %}
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Description</th>
-                            <th>Amount</th>
-                            <th>Paid By</th>
-                            <th>Owes</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for expense in expenses_dict[room_id] %}
-                            <tr>
-                                <td>{{ expense.description }}</td>
-                                <td>₱{{ expense.amount }}</td>
-                                <td>{{ expense.paid_by }}</td>
-                                <td>
-                                    <ul>
-                                        {% for member in members_dict[room_id] %}
-                                            {% if member != expense.paid_by %}
-                                                <li>{{ member }} owes ₱{{ expense.amount / members_dict[room_id]|length }}</li>
-                                            {% endif %}
-                                        {% endfor %}
-                                    </ul>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            {% else %}
-                <p>No expenses for this group.</p>
-            {% endif %}
-        {% endfor %}
-    {% else %}
-        <p>You are not part of any groups.</p>
-    {% endif %}
+    <div>
+        <a href="{{ url_for('home') }}">Dashboard</a>
+        <a href="{{ url_for('groups_expenses') }}">View Groups and Expenses</a>
+        <a href="{{ url_for('code') }}">Join a Group</a>
+        <a href="{{ url_for('groups') }}">Create Group</a>
+        <a href="{{ url_for('profile') }}">Profile</a>
+    </div>
 
-    <a href="{{ url_for('code') }}">Enter code</a>
-    <a href="{{ url_for('groups') }}">Create Code</a>
-    <a href="{{ url_for('profile') }}">Profile</a>
 </body>
 </html>

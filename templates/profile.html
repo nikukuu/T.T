@@ -13,6 +13,8 @@
     {% else %}
         <p>User information could not be retrieved.</p>
     {% endif %}
+
+    <a href="{{ url_for('home') }}">Dashboard</a>
     <a href="{{ url_for('logout') }}">Logout</a>
 </body>
 </html>

@@ -20,7 +20,7 @@ mysql = MySQL(app)
 
 @app.before_request
 def require_login():
-    allowed_routes = ['homepage','login', 'sign_up', 'base', 'mainF', 'code', 'room', 'Aboutus']
+    allowed_routes = ['login', 'sign_up', 'base', 'mainF', 'code', 'room']
     if 'username' not in session and request.endpoint not in allowed_routes:
         return redirect(url_for('login'))
 
@@ -81,54 +81,26 @@ def home():
         username = session['username']
         cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         
-        # Get the rooms the user has joined
+        # Get the overall amount the user owes
         cur.execute("""
-            SELECT r.room_id, r.group_name
-            FROM rooms r
-            JOIN members m ON r.room_id = m.room_id
-            WHERE m.username = %s
+            SELECT SUM(amount) as total_owed
+            FROM debts
+            WHERE borrower = %s
         """, (username,))
-        rooms = cur.fetchall()
+        total_owed = cur.fetchone()['total_owed'] or 0
 
-        # Get the expenses associated with the rooms the user has joined
+        # Get the list of users who owe the logged-in user
         cur.execute("""
-            SELECT e.room_id, e.description, e.amount, e.paid_by
-            FROM expenses e
-            JOIN rooms r ON e.room_id = r.room_id
-            WHERE e.room_id IN (
-                SELECT room_id FROM members WHERE username = %s
-            )
+            SELECT lender, SUM(amount) as total_amount
+            FROM debts
+            WHERE borrower = %s
+            GROUP BY lender
         """, (username,))
-        expenses = cur.fetchall()
-
-        # Get members of all rooms the user has joined
-        cur.execute("""
-            SELECT m.room_id, m.username
-            FROM members m
-            JOIN rooms r ON m.room_id = r.room_id
-            WHERE m.room_id IN (
-                SELECT room_id FROM members WHERE username = %s
-            )
-        """, (username,))
-        members = cur.fetchall()
+        lenders = cur.fetchall()
 
         cur.close()
 
-        # Organize data by room
-        rooms_dict = {room['room_id']: room['group_name'] for room in rooms}
-        expenses_dict = {}
-        for expense in expenses:
-            if expense['room_id'] not in expenses_dict:
-                expenses_dict[expense['room_id']] = []
-            expenses_dict[expense['room_id']].append(expense)
-
-        members_dict = {}
-        for member in members:
-            if member['room_id'] not in members_dict:
-                members_dict[member['room_id']] = []
-            members_dict[member['room_id']].append(member['username'])
-
-        return render_template('home.html', username=username, rooms_dict=rooms_dict, expenses_dict=expenses_dict, members_dict=members_dict)
+        return render_template('home.html', username=username, total_owed=total_owed, lenders=lenders)
     else:
         return redirect(url_for('login'))
 
@@ -270,21 +242,22 @@ def code():
 @app.route('/mainF')
 def mainF():
     if 'username' in session:
-        cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-
-        cur.execute("SELECT room_id FROM rooms ORDER BY room_id DESC LIMIT 1")
-        room = cur.fetchone()
-        
-        if room:
-            room_id = room['room_id']
+        room_id = request.args.get('room_id')
+        if room_id:
             session['room_id'] = room_id
-
-            cur.execute("SELECT username FROM members WHERE room_id = %s", (room_id,))
-            members = cur.fetchall()
         else:
-            room_id = None
-            members = []
+            cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+            cur.execute("SELECT room_id FROM rooms ORDER BY room_id DESC LIMIT 1")
+            room = cur.fetchone()
+            if room:
+                room_id = room['room_id']
+                session['room_id'] = room_id
+            else:
+                room_id = None
         
+        cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        cur.execute("SELECT username FROM members WHERE room_id = %s", (room_id,))
+        members = cur.fetchall()
         cur.close()
         
         success = request.args.get('success', None)
@@ -331,6 +304,66 @@ def add_expense():
             return redirect(url_for('mainF', success=False))
     else:
         return redirect(url_for('login'))
+    
+# Groups and expenses
+@app.route('/groups_expenses')
+def groups_expenses():
+    if 'username' in session:
+        username = session['username']
+        cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        
+        # Get the rooms the user has joined ordered by creation time descending
+        cur.execute("""
+            SELECT r.room_id, r.group_name
+            FROM rooms r
+            JOIN members m ON r.room_id = m.room_id
+            WHERE m.username = %s
+            ORDER BY r.room_id DESC
+        """, (username,))
+        rooms = cur.fetchall()
+
+        # Get the expenses associated with the rooms the user has joined
+        cur.execute("""
+            SELECT e.room_id, e.description, e.amount, e.paid_by
+            FROM expenses e
+            JOIN rooms r ON e.room_id = r.room_id
+            WHERE e.room_id IN (
+                SELECT room_id FROM members WHERE username = %s
+            )
+        """, (username,))
+        expenses = cur.fetchall()
+
+        # Get members of all rooms the user has joined
+        cur.execute("""
+            SELECT m.room_id, m.username
+            FROM members m
+            JOIN rooms r ON m.room_id = r.room_id
+            WHERE m.room_id IN (
+                SELECT room_id FROM members WHERE username = %s
+            )
+        """, (username,))
+        members = cur.fetchall()
+
+        cur.close()
+
+        # Organize data by room
+        rooms_dict = {room['room_id']: room['group_name'] for room in rooms}
+        expenses_dict = {}
+        for expense in expenses:
+            if expense['room_id'] not in expenses_dict:
+                expenses_dict[expense['room_id']] = []
+            expenses_dict[expense['room_id']].append(expense)
+
+        members_dict = {}
+        for member in members:
+            if member['room_id'] not in members_dict:
+                members_dict[member['room_id']] = []
+            members_dict[member['room_id']].append(member['username'])
+
+        return render_template('groups_expenses.html', username=username, rooms_dict=rooms_dict, expenses_dict=expenses_dict, members_dict=members_dict)
+    else:
+        return redirect(url_for('login'))
+
 
 if __name__ == '__main__':
     app.run(debug=True)

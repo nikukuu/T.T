@@ -1,51 +1,42 @@
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap');
 
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Open Sans', sans-serif;
+}
+
 body {
-    font-family: Arial, sans-serif;
-    line-height: 1.6;
-    background-color: #f0f0f0;
-    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: #f0f4f8; /* Light background color */
+    color: #333; /* Dark text color */
 }
-h1, h2, h3 {
-    color: #333;
-}
+
 h1 {
-    font-size: 2.5rem;
+    font-size: 3rem;
+    margin-bottom: 2rem;
+    color: #00a9e0; /* Blue color from the logo */
+    text-align: center;
 }
-h2 {
-    font-size: 2rem;
-    margin-top: 20px;
-}
-h3 {
-    font-size: 1.5rem;
-    margin-top: 10px;
-}
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-}
-th, td {
-    padding: 8px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
-}
-th {
-    background-color: #f2f2f2;
-}
-td {
-    background-color: #fff;
-}
+
 a {
-    display: inline-block;
-    margin-right: 10px;
-    margin-bottom: 10px;
-    padding: 8px 16px;
-    background-color: #007bff;
+    display: block;
+    margin: 1rem 0;
+    padding: 0.75rem 1.5rem;
+    background-color: #00a9e0; /* Blue color from the logo */
     color: #fff;
     text-decoration: none;
     border-radius: 4px;
+    text-align: center;
+    width: 200px;
+    transition: background-color 0.3s;
 }
+
 a:hover {
-    background-color: #0056b3;
+    background-color: #007bb5; /* Darker blue for hover effect */
 }
