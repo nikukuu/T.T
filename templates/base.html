@@ -8,42 +8,116 @@
 </head>
 <body>
 
-    <nav>
-        <ul class="sidebar">
-            <li onclick="hideSidebar"><a href="/"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg></a></li>
-            <li><a href="{{ url_for('base') }}">Login</a></li>
-            <li><a href="{{ url_for('sign_up') }}">Sign up</a></li>
-            
-        </ul>
+    <!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <script src="https://kit.fontawesome.com/64d58efce2.js" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="/static/css/base.css" />
+        <title>Sign in & Sign up Form</title>
+      </head>
 
-        <a  href="{{ url_for('homepage') }}">
-            <img src="/static/images/favicon_30.png" alt="logo">
+      <body>
+        <div class="container">
+          <div class="forms-container">
+            <div class="signin-signup">
+              <form action="/login" method="post" class="sign-in-form">
+                <h2 class="title">Sign in</h2>
+                {% if error %}
+                    <p style="color: red;">{{ error }}</p>
+                {% endif %}
+                <div class="input-field">
+                  <i class="fas fa-user"></i>
+                  <input type="text" name="username" placeholder="Username" required />
+                </div>
+                <div class="input-field">
+                  <i class="fas fa-lock"></i>
+                  <input type="password" name="password" placeholder="Password" required />
+                </div>
+                <input type="submit" value="Login" class="btn solid" />
+                <p class="social-text">Or Sign in with social platforms</p>
+                <div class="social-media">
+                  <a href="#" class="social-icon">
+                    <i class="fab fa-facebook-f"></i>
+                  </a>
+                  <a href="#" class="social-icon">
+                    <i class="fab fa-twitter"></i>
+                  </a>
+                  <a href="#" class="social-icon">
+                    <i class="fab fa-google"></i>
+                  </a>
+                  <a href="#" class="social-icon">
+                    <i class="fab fa-linkedin-in"></i>
+                  </a>
+                </div>
+              </form>
+              <form action="/sign-up" method="post" class="sign-up-form">
+                <h2 class="title">Sign up</h2>
+                <div class="input-field">
+                  <i class="fas fa-user"></i>
+                  <input type="text" name="username" placeholder="Username" required />
+                </div>
+                <div class="input-field">
+                  <i class="fas fa-envelope"></i>
+                  <input type="email" name="email" placeholder="Email" required />
+                </div>
+                <div class="input-field">
+                  <i class="fas fa-lock"></i>
+                  <input type="password" name="password" placeholder="Password" required />
+                </div>
+                <input type="submit" class="btn" value="Sign up" />
+                <p class="social-text">Or Sign up with social platforms</p>
+                <div class="social-media">
+                  <a href="#" class="social-icon">
+                    <i class="fab fa-facebook-f"></i>
+                  </a>
+                  <a href="#" class="social-icon">
+                    <i class="fab fa-twitter"></i>
+                  </a>
+                  <a href="#" class="social-icon">
+                    <i class="fab fa-google"></i>
+                  </a>
+                  <a href="#" class="social-icon">
+                    <i class="fab fa-linkedin-in"></i>
+                  </a>
+                </div>
+              </form>
+            </div>
+          </div>
 
-        </a>
-            
-        <ul>
-            <li></li>
-            <li class="hideOnMobile"><a href="{{ url_for('base') }}">Login</a></li>
-            <li class="action_btn"><a href="{{ url_for('sign_up') }}">Sign up</a></li>
-            
-            <li class="menu-button"onclick=showSidebar()><a href="#"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M120-240v-80h720v80H120Zm0-200v-80h720v80H120Zm0-200v-80h720v80H120Z"/></svg></a></li>
-        </ul>
-    </nav>
+          <div class="panels-container">
+            <div class="panel left-panel">
+              <div class="content">
+                <h3>New here?</h3>
+                <p>
+                 
+Join us today and start managing your bills with friends. Connect with others to make budget management easy.
+                </p>
+                <button class="btn transparent" id="sign-up-btn">
+                  Sign up
+                </button>
+              </div>
+              <img src="/static/images/log.svg" class="image" alt="" />
+            </div>
+            <div class="panel right-panel">
+              <div class="content">
+                <h3>One of us?</h3>
+                <p>
+                    Welcome back! Sign in to continue managing your finances with our app.
+                </p>
+                <button class="btn transparent" id="sign-in-btn">
+                  Sign in
+                </button>
+              </div>
+              <img src="/static/images/register.svg" class="image" alt="" />
+            </div>
+          </div>
+        </div>
 
+        <script src="/static/js/base.js"></script>
+      </body>
+    </html>
 
-
-    <h1>Log in</h1>
-    {% if error %}
-        <p style="color: red;">{{ error }}</p>
-    {% endif %}
-
-    <form action="/login" method="post">
-        <input type="text" name="username" placeholder="Username" required />
-        <input type="password" name="password" placeholder="Password" required />
-        <input type="submit" value="Submit">
-        </form>
-    
-
-        <script src="/static/js/homepage.js"></script>
 </body>
 </html>
