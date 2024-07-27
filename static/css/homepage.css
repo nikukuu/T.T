@@ -9,7 +9,7 @@
 body {
 
     min-height: 100vh;
-    background-image: url(/static/images/Default_a_background_image_for_a_website_clean_white_minimalis_2.jpg);
+    background-image: url(/static/images/bg1.png);
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
@@ -18,7 +18,7 @@ body {
 
 nav{
     background-color: white;
-    box-shadow: 3px 3px 5px rgba(0, 0, 0, 0, 1);
+    box-shadow: 3px 3px 5px rgba(0, 0, 0, 0, 0.1);
     padding: 5px 20px;
     display: flex;
     align-items: center;
@@ -48,7 +48,25 @@ nav a {
 }
 
 nav a:hover{
-    background-color: #f0f0f0;
+    background-color: none;
+}
+
+.action_btn {
+    background-color: rgb(70, 182, 235);
+    color: white;
+    padding: 0.1rem 0.1rem;
+    border: none;
+    outline: none;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: scale 0.2 ease;
+}
+
+.action_btn:hover {
+    scale: 1.05;
+    color: white;
 }
 
 nav li:first-child{
@@ -123,6 +141,15 @@ nav icon {
 
 }
 
+.logo {
+
+    width: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    margin-left: 30px;
+
+}
+
 @media(max-width: 800px) {
     .hideOnMobile{
         display: none;
@@ -135,6 +162,9 @@ nav icon {
     }
     .home-content p {
         display: flex;
+    }
+    .action_btn{
+        display: none;
     }
 
 }
