@@ -10,11 +10,21 @@
     {% if user %}
         <p>Username: {{ user.username }}</p>
         <p>Email: {{ user.email }}</p>
+        {% if user.photo %}
+            <p><img src="{{ user.photo }}" alt="Profile Picture" style="max-width: 200px;"></p>
+        {% endif %}
+        <form action="{{ url_for('profile') }}" method="post" enctype="multipart/form-data">
+            <input type="file" name="photo" accept="image/*">
+            <input type="submit" value="Upload">
+        </form>
     {% else %}
         <p>User information could not be retrieved.</p>
     {% endif %}
-
     <a href="{{ url_for('home') }}">Dashboard</a>
+    <a href="{{ url_for('groups_expenses') }}">View Groups and Expenses</a>
+    <a href="{{ url_for('code') }}">Join a Group</a>
+    <a href="{{ url_for('groups') }}">Create Group</a>
+    <a href="{{ url_for('profile') }}">Profile</a>
     <a href="{{ url_for('logout') }}">Logout</a>
 </body>
 </html>

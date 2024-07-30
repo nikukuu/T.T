@@ -9,6 +9,10 @@
 <body>
     <h1>Sign up Here</h1>
 
+    {% if error %}
+        <p style="color: red;">{{ error }}</p>
+    {% endif %}
+
     <form action="/sign-up" method="post">
         <input type="email" name="email" placeholder="Email Address" required />
         <input type="text" name="username" placeholder="Username" required />

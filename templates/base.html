@@ -24,6 +24,9 @@
             <div class="signin-signup">
               <form action="/login" method="post" class="sign-in-form">
                 <h2 class="title">Sign in</h2>
+                {% if success %}
+                    <p style="color: green;">{{ success }}</p>
+                {% endif %}
                 {% if error %}
                     <p style="color: red;">{{ error }}</p>
                 {% endif %}
@@ -54,6 +57,9 @@
               </form>
               <form action="/sign-up" method="post" class="sign-up-form">
                 <h2 class="title">Sign up</h2>
+                {% if error %}
+                    <p style="color: red;">{{ error }}</p>
+                {% endif %}
                 <div class="input-field">
                   <i class="fas fa-user"></i>
                   <input type="text" name="username" placeholder="Username" required />

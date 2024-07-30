@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settle Up</title>
+</head>
+<body>
+    <h1>Settle Up</h1>
+    <form action="{{ url_for('settle_up', room_id=room_id) }}" method="post">
+        <div>
+            <label for="payer">Payer:</label>
+            <select name="payer" id="payer" required>
+                {% for member in members %}
+                    <option value="{{ member.username }}">{{ member.username }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <label for="recipient">Recipient:</label>
+            <select name="recipient" id="recipient" required>
+                {% for member in members %}
+                    <option value="{{ member.username }}">{{ member.username }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <label for="amount">Amount:</label>
+            <input type="number" name="amount" id="amount" step="0.01" required>
+        </div>
+        <div>
+            <label for="date">Date:</label>
+            <input type="date" name="date" id="date" required>
+        </div>
+        <div>
+            <label for="payment_method">Payment Method:</label>
+            <select name="payment_method" id="payment_method" required>
+                <option value="cash">Cash</option>
+                <option value="e-wallet">E-Wallet (Gcash)</option>
+            </select>
+        </div>
+        <button type="submit">Save</button>
+    </form>
+
+    <a href="{{ url_for('home') }}">Dashboard</a>
+</body>
+</html>

@@ -17,12 +17,12 @@
         </form>
 
         {% if qr_code_url %}
-            <h2>QR Code for Group:</h2>
+            <h2>QR Code for your group:</h2>
             <img src="{{ qr_code_url }}" alt="QR Code">
-            <a href="{{ url_for('mainF') }}">Add expenses</a>
+            <a href="{{ url_for('mainF', room_id=session['room_id']) }}">Add expenses</a>
         {% endif %}
 
-        <a href="{{ url_for('home') }}">Dashboard</a>
+        <a href="{{ url_for('home') }}">Back to Home</a>
 
     </body>
 </html>

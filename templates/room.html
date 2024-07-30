@@ -6,7 +6,7 @@
     <title>Room {{ room_id }}</title>
 </head>
 <body>
-    <h1>Room {{ room_id }}</h1>
+    <h1>Welcome to room {{ room_id }}</h1>
 
     {% if has_expenses %}
         {% for expense in expenses %}
@@ -24,5 +24,12 @@
     {% else %}
         <p>Please wait for the receipt and refresh or come back later.</p>
     {% endif %}
+
+    <a href="{{ url_for('home') }}">Dashboard</a>
+    <a href="{{ url_for('groups_expenses') }}">View Groups and Expenses</a>
+    <a href="{{ url_for('code') }}">Join a Group</a>
+    <a href="{{ url_for('groups') }}">Create Group</a>
+    <a href="{{ url_for('profile') }}">Profile</a>
+
 </body>
 </html>
