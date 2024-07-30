@@ -5,3 +5,5 @@ pip install pypng
 pip install opencv-python
 
 pip install qrcode[pil]
+
+pip install flask-login
