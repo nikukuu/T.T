@@ -42,8 +42,44 @@
                     {% endfor %}
                 </select>
             </p>
+            <input type="hidden" name="room_id" value="{{ room_id }}">
             <button type="submit">Add Expense</button>
         </form>
+    {% endif %}
+
+    <hr>
+
+    <h2>Expenses</h2>
+    {% if has_expenses %}
+        <ul>
+            {% for expense in expenses %}
+                <li>
+                    {{ expense.description }}
+                    <ul>
+                        <li>Amount: ₱{{ expense.amount }}</li>
+                        <li>{{ expense.paid_by }} paid ₱{{ expense.amount }}</li>
+                        <li>Added on: {{ expense.created_at.strftime('%b %d, %Y') }}</li>
+                        {% if username == room_info.creator %}
+                            <a href="{{ url_for('edit_expense', expense_id=expense.id) }}">Edit Expense</a>
+                        {% endif %}
+                        <ul>
+                            {% for member in members %}
+                                <li>{{ member.username }} owes ₱{{ (expense.amount / members|length) | round(2) }}</li>
+                            {% endfor %}
+                        </ul>
+                    </ul>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No expenses yet.</p>
+    {% endif %}
+
+    {% if username == room_info.creator %}
+        <form action="{{ url_for('end_group', room_id=room_id) }}" method="post">
+            <button type="submit">End Group</button>
+        </form>
+        <a href="{{ url_for('settle_up', room_id=room_id) }}">Settle Up</a>
     {% endif %}
 
     <a href="{{ url_for('home') }}">Dashboard</a>

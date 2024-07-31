@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, redirect, request, session
+from flask import Flask, flash, render_template, url_for, redirect, request, session
 import os
 from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user, current_user
 from flask_mysqldb import MySQL
@@ -8,7 +8,7 @@ import time
 import qrcode
 import cv2
 import webbrowser
-from datetime import datetime
+from datetime import datetime, timedelta
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
@@ -201,12 +201,19 @@ def groups():
             room_id = int(time.time())
 
             cur = mysql.connection.cursor()
-            cur.execute("INSERT INTO rooms (room_id, group_name, creator, username) VALUES (%s, %s, %s, %s)", (room_id, group_name, username, username))
+            cur.execute("""
+                INSERT INTO rooms (room_id, group_name, creator, username, created_at)
+                VALUES (%s, %s, %s, %s, NOW())
+            """, (room_id, group_name, username, username))
             mysql.connection.commit()
 
             # Log activity
-            cur.execute("INSERT INTO activity_logs (username, activity) VALUES (%s, %s)", 
-                        (username, f"You created the group {group_name}"))
+            activity_message = f"created a group named '{group_name} (room_id: {room_id})"
+            cur.execute("""
+                    INSERT INTO activity_logs (username, activity, room_id)
+                    VALUES (%s, %s, %s)
+            """, (username, activity_message, room_id))
+
             mysql.connection.commit()
             cur.close()
 
@@ -303,7 +310,7 @@ def join(room_id):
 
         has_expenses = len(expenses) > 0
 
-        return render_template('room.html', room_id=room_id, debts=debts, expenses=expenses, has_expenses=has_expenses, members=members)
+        return render_template('room.html', room_id=room_id, debts=debts, expenses=expenses, has_expenses=has_expenses, members=members, group_name=group_name)
     else:
         return redirect(url_for('login'))
 
@@ -376,7 +383,7 @@ def add_expense():
         description = request.form['description']
         expense = float(request.form['expense'])
         paid_by = request.form['paid_by']
-        room_id = session.get('room_id')
+        room_id = request.form['room_id']  # Retrieve room_id from the form
         username = session.get('username')
 
         if room_id:
@@ -386,8 +393,7 @@ def add_expense():
             cur.execute("""
                 INSERT INTO expenses (room_id, description, amount, paid_by, created_at)
                 VALUES (%s, %s, %s, %s, NOW())
-                ON DUPLICATE KEY UPDATE amount = %s, paid_by = %s, created_at = NOW()
-            """, (room_id, description, expense, paid_by, expense, paid_by))
+            """, (room_id, description, expense, paid_by))
             mysql.connection.commit()
 
             # Delete existing debts related to this expense (modify as necessary)
@@ -406,7 +412,6 @@ def add_expense():
                     cur.execute("""
                         INSERT INTO debts (room_id, lender, borrower, amount, description)
                         VALUES (%s, %s, %s, %s, %s)
-                        ON DUPLICATE KEY UPDATE amount = VALUES(amount), description = VALUES(description)
                     """, (room_id, paid_by, borrower, split_amount, description))
             
             cur.execute("SELECT group_name FROM rooms WHERE room_id = %s", (room_id,))
@@ -417,16 +422,16 @@ def add_expense():
 
             # Log the activity
             cur.execute("""
-                INSERT INTO activity_logs (username, activity, room_id)
-                VALUES (%s, %s, %s)
-            """, (username, f"{username} added an expense of ₱{expense} for {description} in group {group_name} (room_id {room_id})", room_id))
+                INSERT INTO activity_logs (username, activity, room_id, activity_time)
+                VALUES (%s, %s, %s, NOW())
+            """, (username, f"You added an expense of ₱{expense} for {description} in group {group_name} (room_id {room_id})", room_id))
             mysql.connection.commit()
             
             cur.close()
 
-            return redirect(url_for('mainF', room_id=room_id, success=True))
+            return redirect(url_for('mainF', room_id=room_id, success='True'))
         else:
-            return redirect(url_for('mainF', room_id=room_id, success=False))
+            return redirect(url_for('mainF', room_id=room_id, success='False'))
     else:
         return redirect(url_for('login'))
     
@@ -438,12 +443,13 @@ def groups_expenses():
         
         cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         
-        # Fetch rooms the user is part of
+        # Fetch active rooms the user is part of
         cur.execute("""
-            SELECT rooms.room_id, rooms.group_name, rooms.creator 
+            SELECT rooms.room_id, rooms.group_name, rooms.creator, rooms.created_at, rooms.is_active, rooms.ended_at
             FROM rooms 
             JOIN members ON rooms.room_id = members.room_id 
-            WHERE members.username = %s
+            WHERE members.username = %s AND rooms.is_active = 1
+            ORDER BY rooms.created_at DESC
         """, (username,))
         rooms = cur.fetchall()
 
@@ -515,6 +521,13 @@ def edit_expense(expense_id):
                         INSERT INTO debts (room_id, lender, borrower, amount, description)
                         VALUES (%s, %s, %s, %s, %s)
                     """, (room_id, paid_by, borrower, split_amount, description))
+            
+            # Log the activity
+            room_info = get_room_info(room_id)
+            cur.execute("""
+                INSERT INTO activity_logs (username, activity, room_id)
+                VALUES (%s, %s, %s)
+            """, (username, f"{username} edited the expense {description} in group {room_info['group_name']}", room_id))
 
             mysql.connection.commit()
             cur.close()
@@ -554,11 +567,15 @@ def delete_expense(expense_id):
             # Delete related debts
             cur.execute("DELETE FROM debts WHERE room_id = %s AND lender = %s AND amount = %s", (room_id, paid_by, amount))
             mysql.connection.commit()
-
+            
             # Log the activity
             username = session['username']
-            cur.execute("INSERT INTO activity_logs (username, activity) VALUES (%s, %s)", 
-                        (username, f"{username} deleted the expense '{description}' in room {room_id}"))
+            room_info = get_room_info(room_id)
+            cur.execute("""
+                INSERT INTO activity_logs (username, activity, room_id)
+                VALUES (%s, %s, %s)
+            """, (username, f"{username} deleted the expense {description} in group {room_info['group_name']}", room_id))
+
             mysql.connection.commit()
 
             cur.close()
@@ -595,12 +612,11 @@ def settle_up(room_id):
             # Commit the transaction
             mysql.connection.commit()
 
-            # Log activity
-            activity_message = f"{username} recorded a payment from {payer} to {recipient} in group '{room_info['group_name']}'"
+            # Log the activity
             cur.execute("""
                 INSERT INTO activity_logs (username, activity, room_id)
                 VALUES (%s, %s, %s)
-            """, (username, activity_message, room_id))
+            """, (username, f"{username} recorded a payment from {payer} to {recipient} in group {room_info['group_name']}", room_id))
 
             # Commit the activity log
             mysql.connection.commit()
@@ -612,6 +628,52 @@ def settle_up(room_id):
     # Get the members of the group
     members = get_room_members(room_id)
     return render_template('settle_up.html', room_id=room_id, members=members, username=username)
+
+@app.route('/end_group/<int:room_id>', methods=['POST'])
+def end_group(room_id):
+    if 'username' in session:
+        username = session['username']
+        
+        cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+        # Check if the user is the creator of the group
+        cur.execute("SELECT creator, group_name FROM rooms WHERE room_id = %s", (room_id,))
+        room = cur.fetchone()
+        
+        if room and room['creator'] == username:
+            cur.execute("UPDATE rooms SET is_active = 0, ended_at = NOW() WHERE room_id = %s", (room_id,))
+            mysql.connection.commit()
+        
+        # Fetch the group name before ending it
+        cur.execute("SELECT group_name FROM rooms WHERE room_id = %s AND creator = %s", (room_id, username))
+        group = cur.fetchone()
+        
+        if group:
+            group_name = group['group_name']
+            
+            # Update the room's status to inactive
+            cur.execute("""
+                UPDATE rooms
+                SET is_active = FALSE
+                WHERE room_id = %s AND creator = %s
+            """, (room_id, username))
+            
+            # Log the activity
+            cur.execute("""
+                INSERT INTO activity_logs (username, activity, room_id, activity_time)
+                VALUES (%s, %s, %s, NOW())
+            """, (username, f"{username} ended the group {group_name} (room_id: {room_id})", room_id))
+                
+            mysql.connection.commit()
+            
+            cur.close()
+        
+        # Get the members of the group
+        members = get_room_members(room_id)
+        return redirect(url_for('groups_expenses', room_id=room_id, members=members, username=username))
+    else:
+        return redirect(url_for('login'))
+
 
 def get_room_info(room_id):
     cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
@@ -626,9 +688,6 @@ def get_room_members(room_id):
     members = cur.fetchall()
     cur.close()
     return members
-
-
-from datetime import datetime
 
 @app.route('/activity')
 def activity():
@@ -660,6 +719,96 @@ def activity():
         return render_template('activity.html', activities=activities)
     else:
         return redirect(url_for('login'))
+    
+@app.route('/history')
+def history():
+    if 'username' in session:
+        username = session['username']
+        
+        cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        
+        # Fetch ended rooms the user is part of
+        cur.execute("""
+            SELECT rooms.room_id, rooms.group_name, rooms.creator, rooms.created_at, rooms.is_active, rooms.ended_at
+            FROM rooms 
+            JOIN members ON rooms.room_id = members.room_id 
+            WHERE members.username = %s AND rooms.is_active = 0
+            ORDER BY rooms.ended_at DESC
+        """, (username,))
+        rooms = cur.fetchall()
+
+        rooms_dict = {room['room_id']: room for room in rooms}
+        
+        # Fetch expenses for the rooms
+        expenses_dict = {}
+        for room_id in rooms_dict:
+            cur.execute("""
+                SELECT id, description, amount, paid_by, created_at 
+                FROM expenses 
+                WHERE room_id = %s
+            """, (room_id,))
+            expenses_dict[room_id] = cur.fetchall()
+        
+        # Fetch members for the rooms
+        members_dict = {}
+        for room_id in rooms_dict:
+            cur.execute("""
+                SELECT username 
+                FROM members 
+                WHERE room_id = %s
+            """, (room_id,))
+            members = cur.fetchall()
+            members_dict[room_id] = [member['username'] for member in members]
+        
+        cur.close()
+        
+        return render_template('history.html', username=username, rooms_dict=rooms_dict, expenses_dict=expenses_dict, members_dict=members_dict)
+    else:
+        return redirect(url_for('login'))
+
+@app.route('/statistics')
+def statistics():
+    if 'username' in session:
+        username = session['username']
+        
+        cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+        # Calculate start dates for weekly, monthly, and yearly periods
+        today = datetime.now()
+        start_of_week = today - timedelta(days=today.weekday())  # Monday of the current week
+        start_of_month = today.replace(day=1)  # First day of the current month
+        start_of_year = today.replace(month=1, day=1)  # First day of the current year
+
+        # Fetch total expenses for the week
+        cur.execute("""
+            SELECT SUM(amount) as total_weekly_expenses
+            FROM expenses
+            WHERE created_at >= %s AND created_at < %s
+        """, (start_of_week, today))
+        total_weekly_expenses = cur.fetchone()['total_weekly_expenses']
+
+        # Fetch total expenses for the month
+        cur.execute("""
+            SELECT SUM(amount) as total_monthly_expenses
+            FROM expenses
+            WHERE created_at >= %s AND created_at < %s
+        """, (start_of_month, today))
+        total_monthly_expenses = cur.fetchone()['total_monthly_expenses']
+
+        # Fetch total expenses for the year
+        cur.execute("""
+            SELECT SUM(amount) as total_yearly_expenses
+            FROM expenses
+            WHERE created_at >= %s AND created_at < %s
+        """, (start_of_year, today))
+        total_yearly_expenses = cur.fetchone()['total_yearly_expenses']
+
+        cur.close()
+
+        return render_template('statistics.html', username=username, total_weekly_expenses=total_weekly_expenses, total_monthly_expenses=total_monthly_expenses, total_yearly_expenses=total_yearly_expenses)
+    else:
+        return redirect(url_for('login'))
+
 
 
 if __name__ == '__main__':
