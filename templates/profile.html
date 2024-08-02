@@ -72,18 +72,18 @@
                 
         </ul>
 
-        <img src="/static/images/profile.png" class="user-pic" onclick="toggleMenu()">
+        <img src="{{ user.profile_picture }}" class="user-pic" onclick="toggleMenu()">
 
         <div class="sub-menu-wrap" id="subMenu">
             <div class="sub-menu">
                 <div class="user-info">
-                    <img src="/static/images/profile.png"> <!-- Profile pic in the navbar/ need rin kasama twung nauupdate -->
+                    <img src="{{ user.profile_picture }}"> <!-- Profile pic in the navbar/ need rin kasama twung nauupdate -->
                     <h3>{{user. username}}</h3>
                 </div>
                 <hr>
 
             <a href="{{url_for('profile')}}" class="sub-menu-link">
-                <img src="/static/images/profile.png"> 
+                <img src="{{ user.profile_picture }}"> 
                 <p>view profile</p>
                 <span></span>
             </a>
@@ -101,91 +101,108 @@
     <div class="container">
         <div class="profile">
             <div class="profile-header">
-                <img src="/static/images/profile.png" alt="profile" class="profile-img" />
+                <div class="profile-img-container">
+                    <img src="{{ user.profile_picture }}" alt="profile" class="profile-img rounded-circle" />
+                </div>
                 <div class="profile-text-container">
-                    <h1 class="profile-title"> {{user. username}}</h1>
-                    <p class="profile-email">Dito yung email</p> <!--Update active email dito-->
+                    <h1 class="profile-title">{{ user.username }}</h1>
+                    <p class="profile-email">{{ user.email }}</p>
                 </div>
                 <div class="menu">
                     <a href="#" class="menu-links active" data-section="accountSettings"><i class="fa-solid fa-circle-user menu-icon"></i>Account</a>
                     <a href="#" class="menu-links" data-section="socialMediaLinks"><i class="fa-solid fa-link menu-icon"></i>Social Media</a>
                 </div>
             </div>
-
+    
             <!-- Account Settings Section -->
-            <div class="account-section section" id="accountSettings">
-                <div class="account-header">
-                    <h1 class="account-title">Account Settings</h1>
-                    <div class="btn-container">
-                        <button class="btn-cancel" type="button">Cancel</button>
-                        <button class="btn-save" type="submit">Save</button>
+            <form action="{{ url_for('update_profile') }}" method="POST" enctype="multipart/form-data">
+                <div class="account-section section" id="accountSettings">
+                    <div class="account-header">
+                        <h1 class="account-title">Account Settings</h1>
+                        {% if success %}
+                            <p style="color: green;">{{ success }}</p>
+                        {% endif %}
+                        <div class="btn-container">
+                            <button class="btn-cancel" type="button">Cancel</button>
+                            <button class="btn-save" type="submit">Save</button>
+                        </div>
+                    </div>
+                    <div class="account-edit">
+                        <div class="input-container">
+                            <label>Username</label>
+                            <input type="text" name="username" value="{{ user.username }}" required />
+                        </div>
+                        <div class="input-container">
+                            <label>First Name</label>
+                            <input type="text" name="first_name" value="{{ user.first_name }}" required />
+                        </div>
+                        <div class="input-container">
+                            <label>Last Name</label>
+                            <input type="text" name="last_name" value="{{ user.last_name }}" required />
+                        </div>
+                    </div>
+                    <div class="account-edit">
+                        <div class="input-container">
+                            <label>Email</label>
+                            <input type="email" name="email" value="{{ user.email }}" required />
+                        </div>
+                        <div class="input-container">
+                            <label>Phone number</label>
+                            <input type="text" name="phone_number" value="{{ user.phone_number }}" required />
+                        </div>
+                        <div class="account-edit">
+                            <div class="input-container">
+                                <label>Address</label>
+                                <textarea name="address" placeholder="Address">{{ user.address }}</textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="account-edit">
+                        <div class="input-container">
+                            <label>Profile Picture</label>
+                            <input type="file" name="profile_picture" accept="image/*" />
+                        </div>
                     </div>
                 </div>
-                <div class="account-edit">
-                    <div class="input-container">
-                        <label>First Name</label>
-                        <input type="text" placeholder="First Name" />
-                    </div>
-                    <div class="input-container">
-                        <label>Last Name</label>
-                        <input type="text" placeholder="Last Name" />
-                    </div>
-                </div>
-                <div class="account-edit">
-                    <div class="input-container">
-                        <label>Email</label>
-                        <input type="email" placeholder="Email" />
-                    </div>
-                    <div class="input-container">
-                        <label>Phone number</label>
-                        <input type="number" placeholder="Phone number" />
-                    </div>
-                </div>
-                <div class="account-edit">
-                    <div class="input-container">
-                        <label>Address</label>
-                        <textarea placeholder="Address"></textarea>
-                    </div>
-                    
-                </div>
-            </div>
+            
+        
+        
 
-            <!-- Social Media Links Section -->
-            <div class="account-section section" id="socialMediaLinks" style="display: none;">
-                <div class="account-header">
-                    <h1 class="account-title">Social Media Links</h1>
-                    <div class="btn-container">
-                        <button class="btn-cancel" id="cancelLinks">Cancel</button>
-                        <button class="btn-save" id="saveLinks">Save</button>
+                <!-- Social Media Links Section -->
+                <div class="account-section section" id="socialMediaLinks" style="display: none;">
+                    <div class="account-header">
+                        <h1 class="account-title">Social Media Links</h1>
+                        <div class="btn-container">
+                            <button class="btn-cancel" id="cancelLinks">Cancel</button>
+                            <button class="btn-save" id="saveLinks">Save</button>
+                        </div>
+                    </div>
+                    <div class="account-edit">
+                        <div class="input-container">
+                            <label>Instagram</label>
+                            <input type="text" name="instagram" value="{{ user.instagram }}" placeholder="Instagram URL" />
+                        </div>
+                        <div class="input-container">
+                            <label>Facebook</label>
+                            <input type="text" name="facebook" value="{{ user.facebook }}" placeholder="Facebook URL" />
+                        </div>
+                        <div class="input-container">
+                            <label>Twitter</label>
+                            <input type="text" name="twitter" value="{{ user.twitter }}" placeholder="Twitter URL" />
+                        </div>
+                        <div class="input-container">
+                            <label>GitHub</label>
+                            <input type="text" name="github" value="{{ user.github }}" placeholder="GitHub URL" />
+                        </div>
+                    </div>
+                    <div class="saved-links" id="savedLinks" style="display: none;">
+                        <a id="instaLink" href="#" target="_blank">Instagram</a>
+                        <a id="fbLink" href="#" target="_blank">Facebook</a>
+                        <a id="twitterLink" href="#" target="_blank">Twitter</a>
+                        <a id="githubLink" href="#" target="_blank">GitHub</a>
                     </div>
                 </div>
-                <div class="account-edit">
-                    <div class="input-container">
-                        <label>Instagram</label>
-                        <input type="text" id="instagram" placeholder="Instagram URL" />
-                    </div>
-                    <div class="input-container">
-                        <label>Facebook</label>
-                        <input type="text" id="facebook" placeholder="Facebook URL" />
-                    </div>
-                </div>
-                <div class="account-edit">
-                    <div class="input-container">
-                        <label>Twitter</label>
-                        <input type="text" id="twitter" placeholder="Twitter URL" />
-                    </div>
-                    <div class="input-container">
-                        <label>GitHub</label>
-                        <input type="text" id="github" placeholder="GitHub URL" />
-                    </div>
-                </div>
-                <div class="saved-links" id="savedLinks" style="display: none;">
-                    <a id="instaLink" href="#" target="_blank">Instagram</a>
-                    <a id="fbLink" href="#" target="_blank">Facebook</a>
-                    <a id="twitterLink" href="#" target="_blank">Twitter</a>
-                    <a id="githubLink" href="#" target="_blank">GitHub</a>
-                </div>
-            </div>
+            </form>
         </div>
     </div>
 

@@ -10,6 +10,7 @@ import cv2
 import webbrowser
 from datetime import datetime, timedelta
 from werkzeug.utils import secure_filename
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 app.secret_key = 'uwuwers'
@@ -20,52 +21,79 @@ app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = ''
 app.config['MYSQL_DB'] = 'splitshare'
 
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
-
 mysql = MySQL(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
+login_manager.login_view = 'login'
+
+UPLOAD_FOLDER = os.path.join('static', 'uploads')
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 class User(UserMixin):
-    def __init__(self, id):
+    def __init__(self, id=None, username=None, email=None, first_name=None, last_name=None, phone_number=None, profile_picture=None, instagram=None, facebook=None, twitter=None, github=None):
         self.id = id
+        self.username = username
+        self.email = email
+        self.first_name = first_name
+        self.last_name = last_name
+        self.phone_number = phone_number
+        self.profile_picture = profile_picture
+        self.instagram = instagram
+        self.facebook = facebook
+        self.twitter = twitter
+        self.github = github
 
-@login_manager.user_loader
-def load_user(user_id):
-    connection = MySQLdb.connect(
-        host='localhost',
-        user='root',
-        password='',
-        database='splitshare'
-    )
-    cursor = connection.cursor(MySQLdb.cursors.DictCursor)
-    cursor.execute("SELECT id FROM users WHERE id = %s", (user_id,))
-    user = cursor.fetchone()
-    connection.close()
+    def get_id(self):
+        return str(self.id)
     
-    if user:
-        return User(user_id)
-    else:
+    def update(self, username, email, first_name, last_name, phone_number, profile_picture, instagram, facebook, twitter, github):
+        self.username = username
+        self.email = email
+        self.first_name = first_name
+        self.last_name = last_name
+        self.phone_number = phone_number
+        self.profile_picture = profile_picture
+        self.instagram = instagram
+        self.facebook = facebook
+        self.twitter = twitter
+        self.github = github
+
+    @staticmethod
+    def get(user_id):
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT id, username, email, first_name, last_name, phone_number, profile_picture, instagram, facebook, twitter, github FROM register WHERE id = %s", (user_id,))
+        user = cur.fetchone()
+        cur.close()
+        if user:
+            return User(user[0], user[1], user[2], user[3], user[4], user[5], user[6], user[7], user[8], user[9], user[10])
         return None
 
 @login_manager.user_loader
-def load_user(username):
-    cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    cur.execute("SELECT username FROM register WHERE username = %s", (username,))
-    user = cur.fetchone()
+def load_user(user_id):
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT id, username, email, first_name, last_name, phone_number, profile_picture, instagram, facebook, twitter, github FROM register WHERE id = %s", (user_id,))
+    user_data = cur.fetchone()
     cur.close()
-    if user:
-        return User(username)
-    return None
 
-@app.before_request
-def require_login():
-    allowed_routes = ['login', 'sign_up', 'base', 'home', 'mainF', 'code', 'room', 'homepage', 'about']
-    if 'username' not in session and request.endpoint not in allowed_routes:
-        return redirect(url_for('homepage'))
+    if user_data:
+        session['username'] = user_data[1]  # Set username in session
+        return User(
+            id=user_data[0],
+            username=user_data[1],
+            email=user_data[2],
+            first_name=user_data[3],
+            last_name=user_data[4],
+            phone_number=user_data[5],
+            profile_picture=user_data[6],
+            instagram=user_data[7],
+            facebook=user_data[8],
+            twitter=user_data[9],
+            github=user_data[10]
+        )
+    return None
 
 #main
 @app.route('/')
@@ -88,18 +116,25 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-
+        
+        # Fetch user data from the database
         cur = mysql.connection.cursor()
-        cur.execute("SELECT username, password FROM register WHERE username = %s", (username,))
-        user = cur.fetchone()
+        cur.execute("SELECT id, username, password, email, first_name, last_name, phone_number FROM register WHERE username = %s", (username,))
+        user_data = cur.fetchone()
         cur.close()
 
-        if user is None:
+        if user_data is None:
             return render_template('base.html', error='User does not exist')
-        elif password == user[1]:
-            session['username'] = username  # Set session username
-            user_obj = User(username)  # Create User object
-            login_user(user_obj)  # Use Flask-Login to log in
+        elif password == user_data[2]:  # Compare plain text passwords
+            user = User(
+                id=user_data[0],
+                username=user_data[1],
+                email=user_data[3],
+                first_name=user_data[4],
+                last_name=user_data[5],
+                phone_number=user_data[6]
+            )
+            login_user(user)  # Use Flask-Login to log in
             return redirect(url_for('home'))
         else:
             return render_template('base.html', error='Invalid password')
@@ -110,9 +145,18 @@ def login():
 @app.route('/sign-up', methods=['POST', 'GET'])
 def sign_up():
     if request.method == 'POST':
-        email = request.form['email']
-        username = request.form['username']
-        password = request.form['password']
+        # Debugging lines
+        print(request.form)  # To see what data is being posted
+
+        email = request.form.get('email')
+        username = request.form.get('username')
+        password = request.form.get('password')
+        first_name = request.form.get('first_name')
+        last_name = request.form.get('last_name')
+        phone_number = request.form.get('phone_number')
+
+        if not all([email, username, password, first_name, last_name, phone_number]):
+            return render_template('sign_up.html', error='All fields are required.')
 
         cur = mysql.connection.cursor()
         cur.execute("SELECT username FROM register WHERE username = %s", (username,))
@@ -122,66 +166,116 @@ def sign_up():
             cur.close()
             return render_template('sign_up.html', error='Username already exists. Please choose a different username.')
 
-        cur.execute("INSERT INTO register (email, username, password) VALUES (%s, %s, %s)", (email, username, password))
+        cur.execute("""
+            INSERT INTO register (email, username, password, first_name, last_name, phone_number) 
+            VALUES (%s, %s, %s, %s, %s, %s)
+        """, (email, username, password, first_name, last_name, phone_number))
         mysql.connection.commit()
         cur.close()
 
-        # Redirect to login page with success message
         return redirect(url_for('login', success='Your account has been created. You can now log in.'))
+
     return render_template('sign_up.html')
 
 #dashboard
 @app.route('/home')
 def home():
-    if 'username' in session:
-        username = session['username']
-        cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        
-        # Get the overall amount the user owes
-        cur.execute("""
-            SELECT SUM(amount) as total_owed
-            FROM debts
-            WHERE borrower = %s
-        """, (username,))
-        total_owed = cur.fetchone()['total_owed'] or 0
+    username = current_user.username
+    profile_picture = current_user.profile_picture
+    cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    
+    # Get the overall amount the user owes
+    cur.execute("""
+        SELECT SUM(amount) as total_owed
+        FROM debts
+        WHERE borrower = %s
+    """, (username,))
+    total_owed = cur.fetchone()['total_owed'] or 0
 
-        # Get the list of users who owe the logged-in user
-        cur.execute("""
-            SELECT borrower, SUM(amount) as total_amount
-            FROM debts
-            WHERE lender = %s
-            GROUP BY borrower
-        """, (username,))
-        borrowers = cur.fetchall()
+    # Get the list of users who owe the logged-in user
+    cur.execute("""
+        SELECT borrower, SUM(amount) as total_amount
+        FROM debts
+        WHERE lender = %s
+        GROUP BY borrower
+    """, (username,))
+    borrowers = cur.fetchall()
 
-        cur.close()
+    cur.close()
 
-        return render_template('home.html', username=username, total_owed=total_owed, borrowers=borrowers)
-    else:
-        return redirect(url_for('login'))
+    return render_template('home.html', username=username, total_owed=total_owed, borrowers=borrowers, profile_picture=profile_picture)
 
 #user profile    
-@app.route('/profile', methods=['GET', 'POST'])
+@app.route('/profile')
 @login_required
 def profile():
-    username = current_user.id  # Get the current logged-in user's username
+    username = current_user.username
     cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    cur.execute("SELECT email, username FROM register WHERE username = %s", (username,))
+    cur.execute("SELECT * FROM register WHERE username = %s", (username,))
     user = cur.fetchone()
     cur.close()
 
-    if user:
-        if request.method == 'POST' and 'photo' in request.files:
-            file = request.files['photo']
-            if file and allowed_file(file.filename):
-                filename = secure_filename(f"{username}.{file.filename.rsplit('.', 1)[1].lower()}")
-                filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-                file.save(filepath)
-                user['photo'] = url_for('static', filename=f'uploads/{filename}')
-        
-        return render_template('profile.html', user=user)
-    else:
-        return redirect(url_for('login'))
+    return render_template('profile.html', user=user)
+
+#update credentials
+@app.route('/update_profile', methods=['POST'])
+@login_required
+def update_profile():
+    if request.method == 'POST':
+        # Retrieve the data from the form
+        username = request.form['username']
+        first_name = request.form['first_name']
+        last_name = request.form['last_name']
+        email = request.form['email']
+        phone_number = request.form['phone_number']
+        address = request.form['address']
+        profile_picture = request.files['profile_picture']
+        # Retrieve social media links
+        instagram = request.form.get('instagram')
+        facebook = request.form.get('facebook')
+        twitter = request.form.get('twitter')
+        github = request.form.get('github')
+
+        # Handle file upload
+        profile_picture_path = current_user.profile_picture  # Default to existing picture
+        if profile_picture and allowed_file(profile_picture.filename):
+            filename = secure_filename(profile_picture.filename)
+            profile_picture_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            profile_picture.save(profile_picture_path)
+
+        # Update the database with new values
+        cur = mysql.connection.cursor()
+        cur.execute("""
+            UPDATE register 
+            SET username = %s, first_name = %s, last_name = %s, email = %s, phone_number = %s, address = %s, profile_picture = %s,
+                instagram = %s, facebook = %s, twitter = %s, github = %s
+            WHERE id = %s
+        """, (username, first_name, last_name, email, phone_number, address, profile_picture_path,
+              instagram, facebook, twitter, github, current_user.id))
+        mysql.connection.commit()
+
+        # Update the session and current_user data
+        current_user.username = username
+        current_user.email = email
+        current_user.first_name = first_name
+        current_user.last_name = last_name
+        current_user.phone_number = phone_number
+        current_user.profile_picture = profile_picture_path
+        current_user.instagram = instagram
+        current_user.facebook = facebook
+        current_user.twitter = twitter
+        current_user.github = github
+
+        # If username has changed, update the session
+        if session['username'] != username:
+            session['username'] = username
+
+        cur.close()
+
+        # Redirect to the profile page
+        return redirect(url_for('profile', success= 'You have successfully updated your profile!'))
+
+    return render_template('profile.html', user=current_user)
 
 #logout    
 @app.route('/logout')
@@ -190,59 +284,59 @@ def logout():
     logout_user()
     return render_template('homepage.html')
 
-# qr generator and main function
 @app.route('/groups', methods=['POST', 'GET'])
+@login_required
 def groups():
     qr_code_url = None
     if request.method == 'POST' and request.form.get('action') == 'create_group':
-        if 'username' in session:
-            username = session['username']
-            group_name = request.form['group_name']
-            room_id = int(time.time())
+        username = current_user.username
+        group_name = request.form['group_name']
+        room_id = int(time.time())
 
-            cur = mysql.connection.cursor()
-            cur.execute("""
-                INSERT INTO rooms (room_id, group_name, creator, username, created_at)
-                VALUES (%s, %s, %s, %s, NOW())
-            """, (room_id, group_name, username, username))
-            mysql.connection.commit()
+        cur = mysql.connection.cursor()
+        cur.execute("""
+            INSERT INTO rooms (room_id, group_name, creator, username, created_at)
+            VALUES (%s, %s, %s, %s, NOW())
+        """, (room_id, group_name, username, username))
+        mysql.connection.commit()
 
-            # Log activity
-            activity_message = f"created a group named '{group_name} (room_id: {room_id})"
-            cur.execute("""
-                    INSERT INTO activity_logs (username, activity, room_id)
-                    VALUES (%s, %s, %s)
-            """, (username, activity_message, room_id))
+        # Log activity
+        activity_message = f"created a group named '{group_name} (room_id: {room_id})"
+        cur.execute("""
+            INSERT INTO activity_logs (username, activity, room_id)
+            VALUES (%s, %s, %s)
+        """, (username, activity_message, room_id))
 
-            mysql.connection.commit()
-            cur.close()
+        mysql.connection.commit()
+        cur.close()
 
-            session['room_id'] = room_id
+        session['room_id'] = room_id
 
-            join_url = url_for('join', room_id=room_id, _external=True)
-            img = qrcode.make(join_url)
-            base_dir = os.path.dirname(__file__)
-            qr_dir = os.path.join(base_dir, 'static', 'qr')
+        join_url = url_for('join', room_id=room_id, _external=True)
+        img = qrcode.make(join_url)
+        base_dir = os.path.dirname(__file__)
+        qr_dir = os.path.join(base_dir, 'static', 'qr')
 
-            if not os.path.exists(qr_dir):
-                os.makedirs(qr_dir)
-            
-            filename = f"kyuar_{room_id}.png"
-            file_path = os.path.join(qr_dir, filename)
-            
-            img.save(file_path)
-            
-            qr_code_url = url_for('static', filename=f'qr/{filename}')
+        if not os.path.exists(qr_dir):
+            os.makedirs(qr_dir)
 
-            cur = mysql.connection.cursor()
-            cur.execute("INSERT INTO members (room_id, username) VALUES (%s, %s)", (room_id, username))
-            mysql.connection.commit()
-            cur.close()
-            
+        filename = f"kyuar_{room_id}.png"
+        file_path = os.path.join(qr_dir, filename)
+
+        img.save(file_path)
+
+        qr_code_url = url_for('static', filename=f'qr/{filename}')
+
+        cur = mysql.connection.cursor()
+        cur.execute("INSERT INTO members (room_id, username) VALUES (%s, %s)", (room_id, username))
+        mysql.connection.commit()
+        cur.close()
+
     return render_template('groups.html', qr_code_url=qr_code_url)
 
 #join a room
 @app.route('/join/<int:room_id>', methods=['GET'])
+@login_required
 def join(room_id):
     if 'username' in session:
         username = session['username']
@@ -433,6 +527,7 @@ def add_expense():
         else:
             return redirect(url_for('mainF', room_id=room_id, success='False'))
     else:
+        print("User not in session, redirecting to login.")
         return redirect(url_for('login'))
     
 # Groups and expenses
@@ -773,39 +868,28 @@ def statistics():
         
         cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
 
-        # Calculate start dates for weekly, monthly, and yearly periods
-        today = datetime.now()
-        start_of_week = today - timedelta(days=today.weekday())  # Monday of the current week
-        start_of_month = today.replace(day=1)  # First day of the current month
-        start_of_year = today.replace(month=1, day=1)  # First day of the current year
-
-        # Fetch total expenses for the week
+        # Fetch total expenses for each month of the current year
         cur.execute("""
-            SELECT SUM(amount) as total_weekly_expenses
+            SELECT 
+                MONTH(created_at) as month, 
+                SUM(amount) as total_expenses
             FROM expenses
-            WHERE created_at >= %s AND created_at < %s
-        """, (start_of_week, today))
-        total_weekly_expenses = cur.fetchone()['total_weekly_expenses']
-
-        # Fetch total expenses for the month
-        cur.execute("""
-            SELECT SUM(amount) as total_monthly_expenses
-            FROM expenses
-            WHERE created_at >= %s AND created_at < %s
-        """, (start_of_month, today))
-        total_monthly_expenses = cur.fetchone()['total_monthly_expenses']
-
-        # Fetch total expenses for the year
-        cur.execute("""
-            SELECT SUM(amount) as total_yearly_expenses
-            FROM expenses
-            WHERE created_at >= %s AND created_at < %s
-        """, (start_of_year, today))
-        total_yearly_expenses = cur.fetchone()['total_yearly_expenses']
-
+            WHERE YEAR(created_at) = YEAR(CURDATE())
+            GROUP BY MONTH(created_at)
+            ORDER BY MONTH(created_at)
+        """)
+        monthly_expenses = cur.fetchall()
+        
         cur.close()
 
-        return render_template('statistics.html', username=username, total_weekly_expenses=total_weekly_expenses, total_monthly_expenses=total_monthly_expenses, total_yearly_expenses=total_yearly_expenses)
+        # Prepare data for visualization
+        months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+        expenses = [0] * 12
+        for expense in monthly_expenses:
+            month_index = expense['month'] - 1
+            expenses[month_index] = expense['total_expenses']
+
+        return render_template('statistics.html', username=username, months=months, expenses=expenses)
     else:
         return redirect(url_for('login'))
 
