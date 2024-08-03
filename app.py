@@ -288,6 +288,7 @@ def logout():
 @login_required
 def groups():
     qr_code_url = None
+    room_id = None  # Initialize room_id to None
     if request.method == 'POST' and request.form.get('action') == 'create_group':
         username = current_user.username
         group_name = request.form['group_name']
@@ -332,7 +333,7 @@ def groups():
         mysql.connection.commit()
         cur.close()
 
-    return render_template('groups.html', qr_code_url=qr_code_url)
+    return render_template('groups.html', qr_code_url=qr_code_url, room_id=room_id)
 
 #join a room
 @app.route('/join/<int:room_id>', methods=['GET'])
@@ -407,10 +408,15 @@ def join(room_id):
         return render_template('room.html', room_id=room_id, debts=debts, expenses=expenses, has_expenses=has_expenses, members=members, group_name=group_name)
     else:
         return redirect(url_for('login'))
+    
+@app.route('/code')
+@login_required
+def code():
+    return render_template('code.html')
 
 #qr scanner
-@app.route('/code')
-def code():
+@app.route('/scan_qr')
+def scan_qr():
     def open_qr_scanner():
         cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
         if not cap.isOpened():
@@ -429,7 +435,7 @@ def code():
                 webbrowser.open(data)
                 break
 
-            cv2.imshow('qr scanner', img)
+            cv2.imshow('QR Scanner (Click the letter C on your keybord to close camera)', img)
             if cv2.waitKey(1) == ord('c'):
                 break
 
@@ -437,7 +443,33 @@ def code():
         cv2.destroyAllWindows()
 
     threading.Thread(target=open_qr_scanner).start()
-    return render_template('code.html')
+    return '', 204  # No content response
+
+@app.route('/join_by_code', methods=['POST', 'GET'])
+@login_required
+def join_by_code():
+    if 'username' in session:
+        username = session['username']
+        room_id = request.form.get('room_id')  # Using .get() to avoid KeyError
+
+        if room_id:
+            cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+            # Get room_id from the room_id (assuming the form sends room_id directly)
+            cur.execute("SELECT room_id FROM rooms WHERE room_id = %s", (room_id,))
+            room = cur.fetchone()
+
+            if room:
+                room_id = room['room_id']
+                return redirect(url_for('join', room_id=room_id))
+            else:
+                flash('Invalid room ID. Please try again.', 'danger')
+                return redirect(url_for('code'))
+        else:
+            flash('Room ID is required. Please try again.', 'danger')
+            return redirect(url_for('scan_qr'))
+    else:
+        return redirect(url_for('login'))
 
 #main function
 @app.route('/mainF/<int:room_id>', methods=['GET'])
@@ -861,23 +893,23 @@ def history():
     else:
         return redirect(url_for('login'))
 
-@app.route('/statistics')
-def statistics():
+@app.route('/statistics/<int:room_id>')
+def statistics(room_id):
     if 'username' in session:
         username = session['username']
         
         cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
 
-        # Fetch total expenses for each month of the current year
+        # Fetch total expenses for each month of the current year for the specific room
         cur.execute("""
             SELECT 
                 MONTH(created_at) as month, 
                 SUM(amount) as total_expenses
             FROM expenses
-            WHERE YEAR(created_at) = YEAR(CURDATE())
+            WHERE YEAR(created_at) = YEAR(CURDATE()) AND room_id = %s
             GROUP BY MONTH(created_at)
             ORDER BY MONTH(created_at)
-        """)
+        """, (room_id,))
         monthly_expenses = cur.fetchall()
         
         cur.close()
@@ -889,7 +921,7 @@ def statistics():
             month_index = expense['month'] - 1
             expenses[month_index] = expense['total_expenses']
 
-        return render_template('statistics.html', username=username, months=months, expenses=expenses)
+        return render_template('statistics.html', username=username, months=months, expenses=expenses, room_id=room_id)
     else:
         return redirect(url_for('login'))
 

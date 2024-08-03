@@ -80,6 +80,7 @@
             <button type="submit">End Group</button>
         </form>
         <a href="{{ url_for('settle_up', room_id=room_id) }}">Settle Up</a>
+        <a href="{{ url_for('statistics', room_id=room_id) }}">View Statistics</a>
     {% endif %}
 
     <a href="{{ url_for('home') }}">Dashboard</a>

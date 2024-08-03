@@ -71,18 +71,18 @@
                 
         </ul>
 
-        <img src="{{ profile_picture }}" class="user-pic" onclick="toggleMenu()">
+        <img src="{{ profile_picture or '/static/images/profile.png' }}" class="user-pic" onclick="toggleMenu()">
 
         <div class="sub-menu-wrap" id="subMenu">
             <div class="sub-menu">
                 <div class="user-info">
-                    <img src="{{ profile_picture }}"> <!-- Profile pic in the navbar/ need rin kasama twung nauupdate -->
+                    <img src="{{ profile_picture or '/static/images/profile.png' }}"> <!-- Profile pic in the navbar/ need rin kasama twung nauupdate -->
                     <h3>{{username}}</h3>
                 </div>
                 <hr>
 
             <a href="{{url_for('profile')}}" class="sub-menu-link">
-                <img src="{{ profile_picture }}"> 
+                <img src="{{ profile_picture or '/static/images/profile.png' }}"> 
                 <p>view profile</p>
                 <span></span>
             </a>
@@ -132,47 +132,5 @@
 
     <script src="/static/js/home.js"></script>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <!-- 
-    <h1>Welcome, {{ username }}!</h1>
-    
-    <div>
-        <h2>Overall Amount You Owe</h2>
-        <p>₱{{ total_owed }}</p>
-    </div>
-
-    <div>
-        <h2>Users Who Owe You Money</h2>
-        {% if lenders %}
-            <ul>
-                {% for lender in lenders %}
-                    <li>{{ lender['lender'] }} - ₱{{ lender['total_amount'] }}</li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p>No users owe you money.</p>
-        {% endif %}
-    </div>
-
-    <div>
-        <a href="{{ url_for('home') }}">Dashboard</a>
-        <a href="{{ url_for('groups_expenses') }}">View Groups and Expenses</a>
-        <a href="{{ url_for('code') }}">Join a Group</a>
-        <a href="{{ url_for('groups') }}">Create Group</a>
-        <a href="{{ url_for('code') }}">Join a Group</a>
-    </div>
--->
 </body>
 </html>

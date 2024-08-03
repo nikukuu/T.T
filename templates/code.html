@@ -1,18 +1,42 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8">
+<head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Code</title>
-    </head>
-    <body>
-        <h1>Please scan the qr code</h1>
+    <title>Join a Group</title>
+</head>
+<body>
+    <h1>Join a Group</h1>
 
+    <div>
+        <button id="scan-btn">Scan QR Code</button>
+        <button onclick="document.getElementById('manual-code-form').style.display='block'">Enter Room ID</button>
+    </div>
+
+    <div id="manual-code-form" style="display:none;">
+        <form action="{{ url_for('join_by_code') }}" method="post">
+            <label for="room_id">Room ID:</label>
+            <input type="text" id="room_id" name="room_id" required>
+            <button type="submit">Join Room</button>
+        </form>
+    </div>
+
+    <div>
         <a href="{{ url_for('home') }}">Dashboard</a>
         <a href="{{ url_for('groups_expenses') }}">View Groups and Expenses</a>
         <a href="{{ url_for('code') }}">Join a Group</a>
         <a href="{{ url_for('groups') }}">Create Group</a>
         <a href="{{ url_for('profile') }}">Profile</a>
+    </div>
 
-    </body>
+    <script>
+        document.getElementById('scan-btn').addEventListener('click', function() {
+            fetch('/scan_qr').then(response => {
+                if (!response.ok) {
+                    alert('Failed to start QR scanner.');
+                }
+            });
+        });
+    </script>
+</body>
 </html>

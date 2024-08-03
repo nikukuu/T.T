@@ -72,18 +72,18 @@
                 
         </ul>
 
-        <img src="{{ user.profile_picture }}" class="user-pic" onclick="toggleMenu()">
+        <img src="{{ user.profile_picture or '/static/images/profile.png' }}" class="user-pic" onclick="toggleMenu()">
 
         <div class="sub-menu-wrap" id="subMenu">
             <div class="sub-menu">
                 <div class="user-info">
-                    <img src="{{ user.profile_picture }}"> <!-- Profile pic in the navbar/ need rin kasama twung nauupdate -->
+                    <img src="{{ user.profile_picture or '/static/images/profile.png' }}"> <!-- Profile pic in the navbar/ need rin kasama twung nauupdate -->
                     <h3>{{user. username}}</h3>
                 </div>
                 <hr>
 
             <a href="{{url_for('profile')}}" class="sub-menu-link">
-                <img src="{{ user.profile_picture }}"> 
+                <img src="{{ user.profile_picture or '/static/images/profile.png' }}"> 
                 <p>view profile</p>
                 <span></span>
             </a>
@@ -102,7 +102,7 @@
         <div class="profile">
             <div class="profile-header">
                 <div class="profile-img-container">
-                    <img src="{{ user.profile_picture }}" alt="profile" class="profile-img rounded-circle" />
+                    <img src="{{ user.profile_picture or '/static/images/profile.png' }}" alt="profile" class="profile-img rounded-circle" />
                 </div>
                 <div class="profile-text-container">
                     <h1 class="profile-title">{{ user.username }}</h1>

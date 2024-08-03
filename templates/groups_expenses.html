@@ -49,6 +49,7 @@
                             {% if username == room_info.creator %}
                                 <a href="{{ url_for('mainF', room_id=room_id) }}">Add Expense</a>
                                 <a href="{{ url_for('settle_up', room_id=room_id) }}">Settle Up</a>
+                                <a href="{{ url_for('statistics', room_id=room_id) }}">View Statistics</a>
                             {% endif %}
                         {% endif %}
                     </li>
@@ -61,7 +62,6 @@
 
     <div>
         <a href="{{ url_for('home') }}">Dashboard</a>
-        <a href="{{ url_for('statistics') }}">View Statistics</a>
         <a href="{{ url_for('history') }}">View Ended Groups</a>
         <a href="{{ url_for('code') }}">Join a Group</a>
         <a href="{{ url_for('groups') }}">Create Group</a>

@@ -1,28 +1,29 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8">
+<head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Groups</title>
-    </head>
-    <body>
-        <h1>SplitSHARE</h1>
-        <hr>
+</head>
+<body>
+    <h1>SplitSHARE</h1>
+    <hr>
 
-        <h1>Create Group</h1>
-        <form action="{{ url_for('groups') }}" method="POST">
-            <label for="group_name">Group Name:</label>
-            <input type="text" id="group_name" name="group_name" required>
-            <button type="submit" name="action" value="create_group">Create Group</button>
-        </form>
+    <h1>Create Group</h1>
+    <form action="{{ url_for('groups') }}" method="POST">
+        <label for="group_name">Group Name:</label>
+        <input type="text" id="group_name" name="group_name" required>
+        <button type="submit" name="action" value="create_group">Create Group</button>
+    </form>
 
-        {% if qr_code_url %}
-            <h2>QR Code for your group:</h2>
-            <img src="{{ qr_code_url }}" alt="QR Code">
-            <a href="{{ url_for('mainF', room_id=session['room_id']) }}">Add expenses</a>
-        {% endif %}
+    {% if qr_code_url and room_id %}
+        <h2>QR Code for your group:</h2>
+        <img src="{{ qr_code_url }}" alt="QR Code">
+        <p>Room ID: {{ room_id }}</p>
+        <a href="{{ url_for('mainF', room_id=room_id) }}">Add expenses</a>
+    {% endif %}
 
-        <a href="{{ url_for('home') }}">Back to Home</a>
+    <a href="{{ url_for('home') }}">Back to Home</a>
 
-    </body>
+</body>
 </html>
