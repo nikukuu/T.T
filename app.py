@@ -200,7 +200,7 @@ def home():
         WHERE lender = %s
         GROUP BY borrower
     """, (username,))
-    lenders = cur.fetchall()
+    borrowers = cur.fetchall()
 
     # Fetch active rooms the user is part of
     cur.execute("""
@@ -237,7 +237,7 @@ def home():
 
     cur.close()
 
-    return render_template('home.html', username=username, total_owed=total_owed, lenders=lenders, rooms_dict=rooms_dict, expenses_dict=expenses_dict, members_dict=members_dict, profile_picture=profile_picture)
+    return render_template('home.html', username=username, total_owed=total_owed, borrowers=borrowers, rooms_dict=rooms_dict, expenses_dict=expenses_dict, members_dict=members_dict, profile_picture=profile_picture)
 
 #user profile    
 @app.route('/profile')
