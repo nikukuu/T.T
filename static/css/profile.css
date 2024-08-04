@@ -168,6 +168,124 @@ section {
     
 }
 
+.input-container {
+    margin-bottom: 15px;
+    width: 100%;
+}
+
+.input-container label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.input-container input {
+    width: 100%; /* Ensure input fields use the full width of the container */
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box; /* Include padding and border in element's total width and height */
+}
+
+textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box; /* Include padding and border in element's total width and height */
+}
+
+/* Ensure sections and their contents do not overflow */
+.account-edit {
+    box-sizing: border-box;
+}
+
+.account-section {
+    padding: 20px;
+    border-radius: 8px;
+    background-color: #fff; /* Optional: Background color for better visual separation */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Optional: Shadow for a subtle lift effect */
+    margin-bottom: 20px;
+}
+
+.account-header {
+    margin-bottom: 20px;
+}
+
+.btn-container {
+    text-align: right;
+}
+
+.btn-cancel,
+.btn-save {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    color: #fff;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.btn-cancel {
+    background-color: #888;
+}
+
+.btn-save {
+    background-color: #007bff;
+}
+
+.profile-header {
+    display: flex;
+    align-items: center; /* Vertically center-align items */
+    gap: 20px; /* Space between the profile picture and text */
+    padding: 10px; /* Optional: Add padding for better spacing */
+    border: 1px solid #ddd; /* Border to define the profile header */
+    border-radius: 8px; /* Rounded corners */
+    transition: box-shadow 0.3s, background-color 0.3s; /* Smooth transition for interactions */
+}
+
+.profile-header:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add shadow on hover */
+    background-color: #f9f9f9; /* Light background color on hover */
+}
+
+.profile-img-container {
+    margin-left: 20px;
+    margin-right: -90px; /* Adjust negative margin to move the profile picture further to the left */
+    display: flex;
+    align-items: center; /* Center-align the profile picture */
+}
+
+
+.profile-img {
+    width: 60px; /* Smaller size for the profile image */
+    height: 60px; /* Ensure it’s a circle */
+    border-radius: 50%; /* Circular profile picture */
+    object-fit: cover; /* Make sure the image covers the container */
+    border: 2px solid #ddd; /* Border for better visibility */
+    transition: border-color 0.3s; /* Smooth transition for border color */
+}
+
+.profile-img:hover {
+    border-color: #007bff; /* Change border color on hover */
+}
+
+.profile-text-container {
+    display: flex;
+    flex-direction: column; /* Stack username and email vertically */
+    justify-content: center; /* Center-align the text vertically */
+}
+
+.profile-title, .profile-email {
+    margin: 0; /* Remove default margins */
+    transition: color 0.3s; /* Smooth transition for text color */
+}
+
+.profile-title:hover, .profile-email:hover {
+    color: #007bff; /* Change text color on hover */
+}
+
+
 @media(max-width: 800px) {
     .hideOnMobile{
         display: none;

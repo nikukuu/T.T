@@ -5,10 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
     <link rel="stylesheet" href="/static/css/home.css">
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
-
+<!--NavBar-->
     <nav class="navbar">
 
         <ul class="sidebar">
@@ -97,40 +99,117 @@
 
     </nav>
 
+<!--Side Bar-->
+    <div class="FIX-sidebar">
+     
+        <ul class="nav">
+            <li>
+                <a href="#">
+                    <span>Dashboard</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="#">
+                    <span>All Expenses</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="#">
+                    <span>Statistics</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+
+<!--Buttons-->
+
+
+
+
 
 <section class="home">
     <div class="content">
+        <div class="owe-section">
+            <div class="owe">
+                <h3>You Owe</h3>
+                <p>₱{{ total_owed }}</p>
+            </div>
 
-         
-    
-        <div class="owe">
-            <h3>Overall Amount You Owe</h3>
-            <p>₱{{ total_owed }}</p>
+            <div class="who-owe">
+                <h3>You are owed</h3>
+                {% if lenders %}
+                    <ul>
+                        {% for lender in lenders %}
+                            <li>{{ lender['lender'] }} - ₱{{ lender['total_amount'] }}</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No users owe you money.</p>
+                {% endif %}
+            </div>
         </div>
-
-        <br>
-
-        <div class="who-owe">
-            <h3>Users Who Owe You Money</h3>
-            {% if lenders %}
-
-                <ul>
-                    {% for lender in lenders %}
-                        <li>{{ lender['lender'] }} - ₱{{ lender['total_amount'] }}</li>
-                    {% endfor %}
-                </ul>
-            {% else %}
-                <p>No users owe you money.</p>
-            {% endif %}
-        </div>
-
     </div>
 </section>
 
+<section class="groups-and-expenses">
+    <div class="container">
+        <h3>Your Active Groups</h3>
+        {% if rooms_dict %}
+            <ul>
+                {% for room_id, room_info in rooms_dict.items() %}
+                    <li>
+                        <strong>{{ room_info.group_name }}</strong> (created on: {{ room_info.created_at.strftime('%b %d, %Y') }})
+                        {% if room_info.is_active %}
+                            {% if username == room_info.creator %}
+                                <div class="action-buttons">
+                                    <a href="{{ url_for('mainF', room_id=room_id) }}" class="button">Add Expense</a>
+                                    <a href="{{ url_for('settle_up', room_id=room_id) }}" class="button">Settle Up</a>
+                                    <a href="{{ url_for('statistics', room_id=room_id) }}" class="button">View Statistics</a>
+                                </div>
+                            {% endif %}
+                            <ul>
+                                {% if expenses_dict.get(room_id) %}
+                                    {% for expense in expenses_dict[room_id] %}
+                                        <li>
+                                            {{ expense.description }}
+                                            <ul>
+                                                <li>Amount: ₱{{ expense.amount }}</li>
+                                                <li>{{ expense.paid_by }} paid ₱{{ expense.amount }}</li>
+                                                <li>Added on: {{ expense.created_at.strftime('%b %d, %Y') }}</li>
+                                                {% if username == room_info.creator %}
+                                                    <a href="{{ url_for('edit_expense', expense_id=expense.id) }}">Edit Expense</a>
+                                                {% endif %}
+                                                <ul>
+                                                    {% for member in members_dict[room_id] %}
+                                                        <li>{{ member }} owes ₱{{ (expense.amount / members_dict[room_id] | length) | round(2) }}</li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </ul>
+                                        </li>
+                                    {% endfor %}
+                                {% else %}
+                                    <li>No expenses yet.</li>
+                                {% endif %}
+                            </ul>
+                            {% if username == room_info.creator %}
+                                <form action="{{ url_for('end_group', room_id=room_id) }}" method="post" class="end-group-form">
+                                    <button type="submit" class="end-group-button">End Group</button>
+                                </form>
+                            {% endif %}
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>You are not a member of any active groups yet.</p>
+        {% endif %}
+    </div>
+</section>
 
-
-
-    <script src="/static/js/home.js"></script>
+<script src="/static/js/home.js"></script>
 
 </body>
 </html>

@@ -4,8 +4,112 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Join a Group</title>
+    <link rel="stylesheet" href="/static/css/code.css">
 </head>
 <body>
+
+<!--NavBar-->
+<nav class="navbar">
+
+    <ul class="sidebar">
+
+
+        <li onclick="hideSidebar()">
+            <a href="#"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg></a>
+        </li>
+
+        <li>
+            <a href="{{ url_for('home') }}">Dashboard</a>
+        </li>
+
+            
+        <li>
+            <a href="{{ url_for('groups') }}">Create Group</a>
+        </li>
+
+        <li>
+            <a href="{{ url_for('code') }}">Join a Group</a>
+        </li>
+
+        <li>
+            <a href="{{ url_for('profile') }}">View profile</a>
+        </li>
+
+        <li>
+            <a href="{{ url_for('base') }}">Logout</a>
+        </li>
+
+            
+    </ul>
+
+
+    <a  href="{{ url_for('homepage') }}" class="hideOnMobile">
+        <img src="/static/images/favicon_30.png" alt="logo" class="logo">
+
+    </a>
+
+    <ul>
+        <li class="hideOnMobile">
+            <a href="{{ url_for('home') }}">Dashboard</a>
+        </li>
+
+
+            
+        <li class="hideOnMobile">
+            <a href="{{ url_for('groups') }}">Create Group</a>
+        </li>
+
+        <li class="hideOnMobile">
+            <a href="{{ url_for('code') }}">Join a Group</a>
+        </li>
+
+        <li class="menu-button" onclick="showSidebar()">
+            <a href="#"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M120-240v-80h720v80H120Zm0-200v-80h720v80H120Zm0-200v-80h720v80H120Z"/></svg></a>
+        </li>
+
+        <li> </li>
+            
+    </ul>
+
+    <img src="{{ profile_picture or '/static/images/profile.png' }}" class="user-pic" onclick="toggleMenu()">
+
+    <div class="sub-menu-wrap" id="subMenu">
+        <div class="sub-menu">
+            <div class="user-info">
+                <img src="{{ profile_picture or '/static/images/profile.png' }}"> <!-- Profile pic in the navbar/ need rin kasama twung nauupdate -->
+                <h3> {{ username }} </h3>
+            </div>
+            <hr>
+
+        <a href="{{url_for('profile')}}" class="sub-menu-link">
+            <img src="{{ profile_picture or '/static/images/profile.png' }}"> 
+            <p>view profile</p>
+            <span></span>
+        </a>
+        <a href="{{url_for('base')}}" class="sub-menu-link">
+            <img src="/static/images/logout.png">
+            <p>logout</p>
+            <span></span>
+        </a>
+        </div>
+    </div>
+
+
+</nav>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     <h1>Join a Group</h1>
 
     <div>
@@ -21,13 +125,6 @@
         </form>
     </div>
 
-    <div>
-        <a href="{{ url_for('home') }}">Dashboard</a>
-        <a href="{{ url_for('groups_expenses') }}">View Groups and Expenses</a>
-        <a href="{{ url_for('code') }}">Join a Group</a>
-        <a href="{{ url_for('groups') }}">Create Group</a>
-        <a href="{{ url_for('profile') }}">Profile</a>
-    </div>
 
     <script>
         document.getElementById('scan-btn').addEventListener('click', function() {
@@ -38,5 +135,8 @@
             });
         });
     </script>
+
+<script src="/static/js/home.js"></script>
+
 </body>
 </html>
