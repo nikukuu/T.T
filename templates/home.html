@@ -146,10 +146,10 @@
 
             <div class="who-owe">
                 <h3>You are owed</h3>
-                {% if lenders %}
+                {% if borrowers %}
                     <ul>
-                        {% for lender in lenders %}
-                            <li>{{ lender['lender'] }} - ₱{{ lender['total_amount'] }}</li>
+                        {% for borrower in borrowers %}
+                            <li>{{ borrower['borrower'] }} - ₱{{ borrower['total_amount'] }}</li>
                         {% endfor %}
                     </ul>
                 {% else %}
