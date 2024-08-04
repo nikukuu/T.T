@@ -4,57 +4,110 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ended Groups and Expenses</title>
+    <link href="https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="/static/css/history.css">
 </head>
 <body>
-    <h1>Ended Groups and Expenses</h1>
-
-    <div>
-        {% if rooms_dict %}
-            <ul>
-                {% for room_id, room_info in rooms_dict.items() %}
-                    <li>
-                        <strong>{{ room_info.group_name }}</strong> (created on: {{ room_info.created_at.strftime('%b %d, %Y') }})
-                        <p>This group was ended on: {{ room_info.ended_at.strftime('%b %d, %Y') if room_info.ended_at else 'N/A' }}</p>
-                        <ul>
-                            {% if expenses_dict.get(room_id) %}
-                                {% for expense in expenses_dict[room_id] %}
-                                    <li>
-                                        {{ expense.description }}
-                                        <ul>
-                                            <li>Amount: ₱{{ expense.amount }}</li>
-                                            <li>{{ expense.paid_by }} paid ₱{{ expense.amount }}</li>
-                                            <li>Added on: {{ expense.created_at.strftime('%b %d, %Y') }}</li>
-                                            <ul>
-                                                {% for member in members_dict[room_id] %}
-                                                    <li>{{ member }} owes ₱{{ (expense.amount / members_dict[room_id] | length) | round(2) }}</li>
-                                                {% endfor %}
-                                            </ul>
-                                        </ul>
-                                    </li>
-                                {% endfor %}
-                            {% else %}
-                                <li>No expenses yet.</li>
-                            {% endif %}
-                        </ul>
-                    </li>
-                {% endfor %}
+    <nav>
+        <div class="logo">
+          <i class="bx bx-menu menu-icon"></i>
+          <span class="logo-name">SplitShare</span>
+        </div>
+        <div class="sidebar">
+          <div class="logo">
+            <i class="bx bx-menu menu-icon"></i>
+            <span class="logo-name">SplitShare</span>
+          </div>
+  
+          <div class="sidebar-content">
+            <ul class="lists">
+              <li class="list">
+                <a href="{{ url_for('home') }}" class="nav-link">
+                  <i class="bx bx-home-alt icon"></i>
+                  <span class="link">Dashboard</span>
+                </a>
+              </li>
+              <li class="list">
+                  <a href="{{ url_for('groups') }}" class="nav-link">
+                    <span class="link">Create Group</span>
+                  </a>
+                </li>
+              <li class="list">
+                  <a href="{{ url_for('code') }}" class="nav-link">
+                    <span class="link">Join Group</span>
+                  </a>
+                </li>
+              <li class="list">
+                <a href="{{ url_for('active_groups') }}" class="nav-link">
+                  <i class="bx bx-pie-chart-alt-2 icon"></i>
+                  <span class="link">Analytics</span>
+                </a>
+              </li>
+              <li class="list">
+                <a href="{{ url_for('history') }}" class="nav-link">
+                  <i class="bx bx-time icon"></i>
+                  <span class="link">History</span>
+                </a>
+              </li>
             </ul>
-        {% else %}
-            <p>You have no ended groups yet.</p>
-        {% endif %}
+            <div class="bottom-cotent">
+              <li class="list">
+                <a href="{{ url_for('profile') }}" class="nav-link">
+                  <i class="bx bx-user icon"></i>
+                  <span class="link">Profile</span>
+                </a>
+              </li>
+              <li class="list">
+                <a href="{{ url_for('base') }}" class="nav-link">
+                  <i class="bx bx-log-out icon"></i>
+                  <span class="link">Logout</span>
+                </a>
+              </li>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+    <div class="container">
+        <h1>History</h1>
+        <div class="history-content">
+            {% if rooms_dict %}
+                <ul class="group-list">
+                    {% for room_id, room_info in rooms_dict.items() %}
+                        <li class="group-item">
+                            <strong class="group-name">{{ room_info.group_name }}</strong> 
+                            <span class="group-date">(created on: {{ room_info.created_at.strftime('%b %d, %Y') }})</span>
+                            <p>This group was ended on: {{ room_info.ended_at.strftime('%b %d, %Y') if room_info.ended_at else 'N/A' }}</p>
+                            <ul class="expense-list">
+                                {% if expenses_dict.get(room_id) %}
+                                    {% for expense in expenses_dict[room_id] %}
+                                        <li class="expense-item">
+                                            <span class="expense-description">{{ expense.description }}</span>
+                                            <ul class="expense-details">
+                                                <li>Amount: ₱{{ expense.amount }}</li>
+                                                <li>{{ expense.paid_by }} paid ₱{{ expense.amount }}</li>
+                                                <li>Added on: {{ expense.created_at.strftime('%b %d, %Y') }}</li>
+                                                <ul class="member-list">
+                                                    {% for member in members_dict[room_id] %}
+                                                        <li>{{ member }} owes ₱{{ (expense.amount / members_dict[room_id] | length) | round(2) }}</li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </ul>
+                                        </li>
+                                    {% endfor %}
+                                {% else %}
+                                    <li>No expenses yet.</li>
+                                {% endif %}
+                            </ul>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>You have no ended groups yet.</p>
+            {% endif %}
+        </div>
     </div>
 
-    <div>
-        <a href="{{ url_for('home') }}">Dashboard</a>
-        <a href="{{ url_for('groups') }}">Create Group</a>
-        <a href="{{ url_for('code') }}">Join a Group</a>
-        <a href="{{ url_for('profile') }}">Profile</a>
-        <a href="{{ url_for('base') }}">Logout</a>
-        
-        <a href="{{ url_for('home') }}">Dashboard</a>
-        <a href="{{ url_for('history') }}">History</a>
-        <a href="{{ url_for('active_groups') }}">Statistics</a>
-        <a href="{{ url_for('activity') }}">Activity</a>
-    </div>
+    <script src="/static/js/dashboard.js"></script>
 </body>
 </html>

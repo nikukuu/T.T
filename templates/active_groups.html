@@ -4,17 +4,77 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Active Groups</title>
-    <link rel="stylesheet" href="/static/css/active_groups.css"> <!-- Add your CSS file -->
+    <link rel="stylesheet" href="/static/css/active_groups.css">
+    <link
+        href="https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css"
+        rel="stylesheet"
+    />
+    <link rel="icon" type="image/png" href="/static/images/favicon40.png">
 </head>
 <body>
     <nav>
-        <a href="{{ url_for('homepage') }}" class="logo">
-            <img src="/static/images/favicon_30.png" alt="logo">
-        </a>
+        <div class="logo">
+            <i class="bx bx-menu menu-icon"></i>
+            <span class="logo-name">SplitShare</span>
+        </div>
+        <div class="sidebar">
+            <div class="logo">
+                <i class="bx bx-menu menu-icon"></i>
+                <span class="logo-name">SplitShare</span>
+            </div>
+            <div class="sidebar-content">
+                <ul class="lists">
+                    <li class="list">
+                        <a href="{{ url_for('home') }}" class="nav-link">
+                            <i class="bx bx-home-alt icon"></i>
+                            <span class="link">Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="list">
+                        <a href="{{ url_for('groups') }}" class="nav-link">
+                            <span class="link">Create Group</span>
+                        </a>
+                    </li>
+                    <li class="list">
+                        <a href="{{ url_for('code') }}" class="nav-link">
+                            <span class="link">Join Group</span>
+                        </a>
+                    </li>
+                    <li class="list">
+                        <a href="{{ url_for('active_groups') }}" class="nav-link">
+                            <i class="bx bx-pie-chart-alt-2 icon"></i>
+                            <span class="link">Analytics</span>
+                        </a>
+                    </li>
+                    <li class="list">
+                        <a href="{{ url_for('history') }}" class="nav-link">
+                            <i class="bx bx-time icon"></i>
+                            <span class="link">History</span>
+                        </a>
+                    </li>
+                </ul>
+                <div class="bottom-content">
+                    <ul class="lists">
+                        <li class="list">
+                            <a href="{{ url_for('profile') }}" class="nav-link">
+                                <i class="bx bx-user icon"></i>
+                                <span class="link">Profile</span>
+                            </a>
+                        </li>
+                        <li class="list">
+                            <a href="{{ url_for('base') }}" class="nav-link">
+                                <i class="bx bx-log-out icon"></i>
+                                <span class="link">Logout</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
     </nav>
     
-    <div class="container">
-        <h3>Your Active Groups</h3>
+    <div class="Rooms">
+        <h3>Groups: </h3>
         {% if rooms %}
             <ul>
                 {% for room in rooms %}
@@ -30,17 +90,6 @@
         {% endif %}
     </div>
 
-    <div>
-        <a href="{{ url_for('home') }}">Dashboard</a>
-        <a href="{{ url_for('groups') }}">Create Group</a>
-        <a href="{{ url_for('code') }}">Join a Group</a>
-        <a href="{{ url_for('profile') }}">Profile</a>
-        <a href="{{ url_for('base') }}">Logout</a>
-        
-        <a href="{{ url_for('home') }}">Dashboard</a>
-        <a href="{{ url_for('history') }}">History</a>
-        <a href="{{ url_for('active_groups') }}">Statistics</a>
-        <a href="{{ url_for('activity') }}">Activity</a>
-    </div>
+    <script src="/static/js/dashboard.js"></script>
 </body>
 </html>

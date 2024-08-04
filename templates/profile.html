@@ -3,106 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Profile</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="stylesheet" href="/static/css/profile2.css">
-    <link rel="stylesheet" href="/static/css/profile.css">
+    <link rel="stylesheet" href="/static/css/profile3.css">
+    <link href="https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css" rel="stylesheet" />
 </head>
 <body>
 
-    <nav class="navbar">
-
-        <ul class="sidebar">
-
-
-            <li onclick="hideSidebar()">
-                <a href="#"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg></a>
-            </li>
-
-            <li>
-                <a href="{{ url_for('home') }}">Dashboard</a>
-            </li>
-
-                
-            <li>
-                <a href="{{ url_for('groups') }}">Create Group</a>
-            </li>
-
-            <li>
-                <a href="{{ url_for('code') }}">Join a Group</a>
-            </li>
-
-            <li>
-                <a href="{{ url_for('profile') }}">View profile</a>
-            </li>
-
-            <li>
-                <a href="{{ url_for('base') }}">Logout</a>
-            </li>
-
-                
-        </ul>
-
-
-        <a  href="{{ url_for('homepage') }}" class="hideOnMobile">
-            <img src="/static/images/favicon_30.png" alt="logo" class="logo">
-    
-        </a>
-
-        <ul>
-            <li class="hideOnMobile">
-                <a href="{{ url_for('home') }}">Dashboard</a>
-            </li>
-
-
-                
-            <li class="hideOnMobile">
-                <a href="{{ url_for('groups') }}">Create Group</a>
-            </li>
-
-            <li class="hideOnMobile">
-                <a href="{{ url_for('code') }}">Join a Group</a>
-            </li>
-
-            <li class="menu-button" onclick="showSidebar()">
-                <a href="#"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M120-240v-80h720v80H120Zm0-200v-80h720v80H120Zm0-200v-80h720v80H120Z"/></svg></a>
-            </li>
-
-            <li> </li>
-                
-        </ul>
-
-        <img src="{{ user.profile_picture or '/static/images/profile.png' }}" class="user-pic" onclick="toggleMenu()">
-
-        <div class="sub-menu-wrap" id="subMenu">
-            <div class="sub-menu">
-                <div class="user-info">
-                    <img src="{{ user.profile_picture or '/static/images/profile.png' }}"> <!-- Profile pic in the navbar/ need rin kasama twung nauupdate -->
-                    <h3>{{user. username}}</h3>
+    <nav>
+        <div class="logo">
+            <i class="bx bx-menu menu-icon"></i>
+            <span class="logo-name">SplitShare</span>
+        </div>
+        <div class="sidebar">
+            <div class="logo">
+                <i class="bx bx-menu menu-icon"></i>
+                <span class="logo-name">SplitShare</span>
+            </div>
+            <div class="sidebar-content">
+                <ul class="lists">
+                    <li class="list">
+                        <a href="{{ url_for('home') }}" class="nav-link">
+                            <i class="bx bx-home-alt icon"></i>
+                            <span class="link">Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="list">
+                        <a href="{{ url_for('groups') }}" class="nav-link">
+                            <span class="link">Create Group</span>
+                        </a>
+                    </li>
+                    <li class="list">
+                        <a href="{{ url_for('code') }}" class="nav-link">
+                            <span class="link">Join Group</span>
+                        </a>
+                    </li>
+                    <li class="list">
+                        <a href="{{ url_for('active_groups') }}" class="nav-link">
+                            <i class="bx bx-pie-chart-alt-2 icon"></i>
+                            <span class="link">Analytics</span>
+                        </a>
+                    </li>
+                    <li class="list">
+                        <a href="{{ url_for('history') }}" class="nav-link">
+                            <i class="bx bx-time icon"></i>
+                            <span class="link">History</span>
+                        </a>
+                    </li>
+                </ul>
+                <div class="bottom-content">
+                    <li class="list">
+                        <a href="{{ url_for('profile') }}" class="nav-link">
+                            <i class="bx bx-user icon"></i>
+                            <span class="link">Profile</span>
+                        </a>
+                    </li>
+                    <li class="list">
+                        <a href="{{ url_for('base') }}" class="nav-link">
+                            <i class="bx bx-log-out icon"></i>
+                            <span class="link">Logout</span>
+                        </a>
+                    </li>
                 </div>
-                <hr>
-
-            <a href="{{url_for('profile')}}" class="sub-menu-link">
-                <img src="{{ user.profile_picture or '/static/images/profile.png' }}"> 
-                <p>view profile</p>
-                <span></span>
-            </a>
-            <a href="{{url_for('base')}}" class="sub-menu-link">
-                <img src="/static/images/logout.png">
-                <p>logout</p>
-                <span></span>
-            </a>
             </div>
         </div>
-
-
     </nav>
 
     <div class="container">
         <div class="profile">
             <div class="profile-header">
                 <div class="profile-img-container">
-                    <img src="{{ user.profile_picture or '/static/images/profile.png' }}" alt="profile" class="profile-img rounded-circle" />
+                    <img src="{{ user.profile_picture or '/static/images/profile.png' }}" alt="profile" class="profile-img" />
                 </div>
                 <div class="profile-text-container">
                     <h1 class="profile-title">{{ user.username }}</h1>
@@ -150,11 +121,11 @@
                             <label>Phone number</label>
                             <input type="text" name="phone_number" value="{{ user.phone_number }}" required />
                         </div>
-                        <div class="account-edit">
-                            <div class="input-container">
-                                <label>Address</label>
-                                <textarea name="address" placeholder="Address">{{ user.address }}</textarea>
-                            </div>
+                    </div>
+                    <div class="account-edit">
+                        <div class="input-container">
+                            <label>Address</label>
+                            <textarea name="address" placeholder="Address">{{ user.address }}</textarea>
                         </div>
                     </div>
                     <div class="account-edit">
@@ -165,16 +136,13 @@
                     </div>
                 </div>
             
-        
-        
-
                 <!-- Social Media Links Section -->
                 <div class="account-section section" id="socialMediaLinks" style="display: none;">
                     <div class="account-header">
                         <h1 class="account-title">Social Media Links</h1>
                         <div class="btn-container">
-                            <button class="btn-cancel" id="cancelLinks">Cancel</button>
-                            <button class="btn-save" id="saveLinks">Save</button>
+                            <button class="btn-cancel" id="cancelLinks" type="button">Cancel</button>
+                            <button class="btn-save" id="saveLinks" type="button">Save</button>
                         </div>
                     </div>
                     <div class="account-edit">
@@ -206,15 +174,8 @@
         </div>
     </div>
 
-    
-
     <script src="/static/js/profile.js"></script>
+    <script src="/static/js/dashboard.js"></script>
 
-    <div>
-        <a href="{{ url_for('home') }}">Dashboard</a>
-        <a href="{{ url_for('history') }}">History</a>
-        <a href="{{ url_for('active_groups') }}">Statistics</a>
-        <a href="{{ url_for('activity') }}">Activity</a>
-    </div>
 </body>
 </html>

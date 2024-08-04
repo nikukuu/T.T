@@ -1,220 +1,258 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
-    <link rel="stylesheet" href="/static/css/home.css">
-    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
-     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+   <title>SplitSHare</title>
+    <link rel="stylesheet" href="/static/css/home.css" />
+    <link
+      href="https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
 
-<!--NavBar-->
-    <nav class="navbar">
-
-        <ul class="sidebar">
-
-
-            <li onclick="hideSidebar()">
-                <a href="#"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg></a>
-            </li>
-
-            <li>
-                <a href="{{ url_for('home') }}">Dashboard</a>
-            </li>
-
-                
-            <li>
-                <a href="{{ url_for('groups') }}">Create Group</a>
-            </li>
-
-            <li>
-                <a href="{{ url_for('code') }}">Join a Group</a>
-            </li>
-
-            <li>
-                <a href="{{ url_for('profile') }}">View profile</a>
-            </li>
-
-            <li>
-                <a href="{{ url_for('base') }}">Logout</a>
-            </li>
-
-                
-        </ul>
-
-
+    <nav>
+      <div class="logo">
+        <i class="bx bx-menu menu-icon"></i>
         <a  href="{{ url_for('homepage') }}" class="hideOnMobile">
             <img src="/static/images/favicon_30.png" alt="logo" class="logo">
-    
         </a>
-
-        <ul>
-            <li class="hideOnMobile">
-                <a href="{{ url_for('home') }}">Dashboard</a>
-            </li>
-
-
-                
-            <li class="hideOnMobile">
-                <a href="{{ url_for('groups') }}">Create Group</a>
-            </li>
-
-            <li class="hideOnMobile">
-                <a href="{{ url_for('code') }}">Join a Group</a>
-            </li>
-
-            <li class="menu-button" onclick="showSidebar()">
-                <a href="#"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M120-240v-80h720v80H120Zm0-200v-80h720v80H120Zm0-200v-80h720v80H120Z"/></svg></a>
-            </li>
-
-            <li> </li>
-                
-        </ul>
-
-        <img src="{{ profile_picture or '/static/images/profile.png' }}" class="user-pic" onclick="toggleMenu()">
-
-        <div class="sub-menu-wrap" id="subMenu">
-            <div class="sub-menu">
-                <div class="user-info">
-                    <img src="{{ profile_picture or '/static/images/profile.png' }}"> <!-- Profile pic in the navbar/ need rin kasama twung nauupdate -->
-                    <h3>{{username}}</h3>
-                </div>
-                <hr>
-
-            <a href="{{url_for('profile')}}" class="sub-menu-link">
-                <img src="{{ profile_picture or '/static/images/profile.png' }}"> 
-                <p>view profile</p>
-                <span></span>
-            </a>
-            <a href="{{url_for('base')}}" class="sub-menu-link">
-                <img src="/static/images/logout.png">
-                <p>logout</p>
-                <span></span>
-            </a>
-            </div>
+      </div>
+      
+      <div class="sidebar">
+        <div class="logo">
+          <i class="bx bx-menu menu-icon"></i>
+          <span class="logo-name">SplitShare</span>
         </div>
 
+        <div class="sidebar-content">
+          <ul class="lists">
+            <li class="list">
+              <a href="{{ url_for('home') }}" class="nav-link">
+                <i class="bx bx-home-alt icon"></i>
+                <span class="link">Dashboard</span>
+              </a>
+            </li>
 
+            <li class="list">
+                <a href="{{ url_for('groups') }}" class="nav-link">
+                  
+                  <span class="link">Create Group</span>
+                </a>
+              </li>
+
+              <li class="list">
+                <a href="{{ url_for('code') }}" class="nav-link">
+                  
+                  <span class="link">Join Group</span>
+                </a>
+              </li>
+
+            <li class="list">
+              <a href="{{ url_for('active_groups') }}" class="nav-link">
+                <i class="bx bx-pie-chart-alt-2 icon"></i>
+                <span class="link">Analytics</span>
+              </a>
+            </li>
+
+            
+
+            <li class="list">
+              <a href="{{ url_for('history') }}" class="nav-link">
+                <i class="bx bx-time icon"></i> <!-- Changed icon here -->
+                <span class="link">History</span>
+              </a>
+            </li>
+          </ul>
+
+
+          <div class="bottom-cotent">
+            <li class="list">
+              <a href="{{ url_for('profile') }}" class="nav-link">
+                <i class="bx bx-user icon"></i> <!-- Changed icon here -->
+                <span class="link">Profile</span>
+              </a>
+            </li>
+            <li class="list">
+              <a href="{{ url_for('base') }}" class="nav-link">
+                <i class="bx bx-log-out icon"></i>
+                <span class="link">Logout</span>
+              </a>
+            </li>
+          </div>
+        </div>
+      </div>
     </nav>
 
-<!--Side Bar-->
-    <div class="FIX-sidebar">
-     
-        <ul class="nav">
-            <li>
-                <a href="#">
-                    <span>Dashboard</span>
-                </a>
-            </li>
-
-            <li>
-                <a href="{{ url_for('history') }}">
-                    <span>History</span>
-                </a>
-            </li>
-
-            <li>
-                <a href="{{ url_for('active_groups') }}">
-                    <span>Statistics</span>
-                </a>
-            </li>
-
-            <li>
-                <a href="{{ url_for('activity') }}">
-                    <span>Activity</span>
-                </a>
-            </li>
-        </ul>
-    </div>
-
-
-<!--Buttons-->
-
-
-
-
-
-<section class="home">
-    <div class="content">
-        <div class="owe-section">
-            <div class="owe">
-                <h3>You Owe</h3>
-                <p>₱{{ total_owed }}</p>
-            </div>
-
-            <div class="who-owe">
-                <h3>You are owed</h3>
-                {% if borrowers %}
-                    <ul>
-                        {% for borrower in borrowers %}
-                            <li>{{ borrower['borrower'] }} - ₱{{ borrower['total_amount'] }}</li>
-                        {% endfor %}
-                    </ul>
-                {% else %}
-                    <p>No users owe you money.</p>
-                {% endif %}
+    <section class="home">
+        <div class="content">
+            <div class="owe-section">
+                <div class="owe">
+                    <h3>You Owe</h3>
+                    <p class="amount">₱{{ total_owed }}</p>
+                </div>
+    
+                <div class="who-owe">
+                    <h3>You are owed</h3>
+                    {% if borrowers %}
+                        <ul class="borrowers-list">
+                            {% for borrower in borrowers %}
+                                <li>{{ borrower['borrower'] }} - ₱{{ borrower['total_amount'] }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>No users owe you money.</p>
+                    {% endif %}
+                </div>
             </div>
         </div>
-    </div>
-</section>
-
-<section class="groups-and-expenses">
-    <div class="container">
-        <h3>Your Active Groups</h3>
-        {% if rooms_dict %}
-            <ul>
-                {% for room_id, room_info in rooms_dict.items() %}
-                    <li>
-                        <strong>{{ room_info.group_name }}</strong> 
-                        {% if room_info.is_active %}
-                            {% if username == room_info.creator %}
-                                <div class="action-buttons">
-                                    <a href="{{ url_for('mainF', room_id=room_id) }}" class="button">Add Expense</a>
-                                    <a href="{{ url_for('settle_up', room_id=room_id) }}" class="button">Settle Up</a>
-                                </div>
-                            {% endif %}
-                            <ul>
-                                {% if expenses_dict.get(room_id) %}
-                                    {% for expense in expenses_dict[room_id] %}
-                                        <li>
-                                            {{ expense.description }}
-                                            <ul>
-                                                <li>Amount: ₱{{ expense.amount }}</li>
-                                                <li>{{ expense.paid_by }} paid ₱{{ expense.amount }}</li>
-                                                <li>Added on: {{ expense.created_at.strftime('%b %d, %Y') }}</li>
-                                                {% if username == room_info.creator %}
-                                                    <a href="{{ url_for('edit_expense', expense_id=expense.id) }}">Edit Expense</a>
-                                                {% endif %}
-                                                <ul>
-                                                    {% for member in members_dict[room_id] %}
-                                                        <li>{{ member }} owes ₱{{ (expense.amount / members_dict[room_id] | length) | round(2) }}</li>
-                                                    {% endfor %}
-                                                </ul>
-                                            </ul>
-                                        </li>
-                                    {% endfor %}
-                                {% else %}
-                                    <li>No expenses yet.</li>
+    </section>
+    
+    <section class="groups-and-expenses">
+        <div class="container">
+            <h3>Your Active Groups</h3>
+            {% if rooms_dict %}
+                <ul class="groups-list">
+                    {% for room_id, room_info in rooms_dict.items() %}
+                        <li class="group-item">
+                            <strong>{{ room_info.group_name }}</strong>
+                            {% if room_info.is_active %}
+                                {% if username == room_info.creator %}
+                                    <div class="action-buttons">
+                                        <button class="button" onclick="openAddExpensePopup('{{ room_id }}')">Add Expense</button>
+                                        <button class="button" onclick="openSettleUpPopup('{{ room_id }}')">Settle Up</button>
+                                    </div>
                                 {% endif %}
-                            </ul>
-                            {% if username == room_info.creator %}
-                                <form action="{{ url_for('end_group', room_id=room_id) }}" method="post" class="end-group-form">
-                                    <button type="submit" class="end-group-button">End Group</button>
-                                </form>
+                                <ul class="expenses-list">
+                                    {% if expenses_dict.get(room_id) %}
+                                        {% for expense in expenses_dict[room_id] %}
+                                            <li class="expense-item">
+                                                <p>{{ expense.description }}</p>
+                                                <ul class="expense-details">
+                                                    <li>Amount: ₱{{ expense.amount }}</li>
+                                                    <li>{{ expense.paid_by }} paid ₱{{ expense.amount }}</li>
+                                                    <li>Added on: {{ expense.created_at.strftime('%b %d, %Y') }}</li>
+                                                    {% if username == room_info.creator %}
+                                                        <button onclick="openEditExpensePopup('{{ expense.id }}', '{{ expense.description }}', '{{ expense.amount }}', '{{ expense.paid_by }}')">Edit Expense</button>
+                                                    {% endif %}
+                                                    <ul class="members-contributions">
+                                                        {% for member in members_dict[room_id] %}
+                                                            <li>{{ member }} owes ₱{{ (expense.amount / members_dict[room_id] | length) | round(2) }}</li>
+                                                        {% endfor %}
+                                                    </ul>
+                                                </ul>
+                                            </li>
+                                        {% endfor %}
+                                    {% else %}
+                                        <li>No expenses yet.</li>
+                                    {% endif %}
+                                </ul>
+                                {% if username == room_info.creator %}
+                                    <form action="{{ url_for('end_group', room_id=room_id) }}" method="post" class="end-group-form">
+                                        <button type="submit" class="end-group-button">End Group</button>
+                                    </form>
+                                {% endif %}
                             {% endif %}
-                        {% endif %}
-                    </li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p>You are not a member of any active groups yet.</p>
-        {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>You are not a member of any active groups yet.</p>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- Popup form containers -->
+    <div id="addExpensePopup" class="popup">
+        <div class="popup-content">
+            <span class="close-btn" onclick="closeAddExpensePopup()">&times;</span>
+            <h2>Add an expense</h2>
+            <form action="{{ url_for('add_expense') }}" method="POST">
+                <p>Enter description:</p>
+                <input type="text" name="description" required>
+                <p>Expense: ₱<input type="number" step="0.01" name="expense" required></p>
+                <p>Paid by:
+                    <select name="paid_by" required>
+                        {% for member in members %}
+                            <option value="{{ member.username }}">{{ member.username }}</option>
+                        {% endfor %}
+                    </select>
+                </p>
+                <input type="hidden" name="room_id" id="popupRoomId">
+                <button type="submit">Add Expense</button>
+            </form>
+        </div>
     </div>
-</section>
 
-<script src="/static/js/home.js"></script>
+    <div id="settleUpPopup" class="popup">
+        <div class="popup-content">
+            <span class="close-btn" onclick="closeSettleUpPopup()">&times;</span>
+            <h2>Settle Up</h2>
+            <form action="{{ url_for('settle_up', room_id=room_id) }}" method="post">
+                <div>
+                    <label for="payer">Payer:</label>
+                    <select name="payer" id="payer" required>
+                        {% for member in members %}
+                            <option value="{{ member.username }}">{{ member.username }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label for="recipient">Recipient:</label>
+                    <select name="recipient" id="recipient" required>
+                        {% for member in members %}
+                            <option value="{{ member.username }}">{{ member.username }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label for="amount">Amount:</label>
+                    <input type="number" name="amount" id="amount" step="0.01" required>
+                </div>
+                <div>
+                    <label for="date">Date:</label>
+                    <input type="date" name="date" id="date" required>
+                </div>
+                <div>
+                    <label for="payment_method">Payment Method:</label>
+                    <select name="payment_method" id="payment_method" required>
+                        <option value="cash">Cash</option>
+                        <option value="e-wallet">E-Wallet (Gcash)</option>
+                    </select>
+                </div>
+                <button type="submit">Save</button>
+            </form>
+        </div>
+    </div>
 
-</body>
+    <div id="editExpensePopup" class="popup">
+        <div class="popup-content">
+            <span class="close-btn" onclick="closeEditExpensePopup()">&times;</span>
+            <h2>Edit Expense</h2>
+            <form action="{{ url_for('edit_expense') }}" method="POST">
+                <input type="hidden" name="expense_id" id="editExpenseId">
+                <p>Enter description:</p>
+                <input type="text" name="description" id="editDescription" required>
+                <p>Expense: ₱<input type="number" step="0.01" name="amount" id="editAmount" required></p>
+                <p>Paid by:
+                    <select name="paid_by" id="editPaidBy" required>
+                        {% for member in members %}
+                            <option value="{{ member.username }}">{{ member.username }}</option>
+                        {% endfor %}
+                    </select>
+                </p>
+                <input type="hidden" name="room_id" id="editRoomId">
+                <button type="submit">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+	
+
+    <script src="/static/js/dashboard.js"></script>
+    <script src="/static/js/addexpense.js"></script>
+    <script src="/static/js/settleup.js"></script>
+  </body>
 </html>
