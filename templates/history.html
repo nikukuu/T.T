@@ -7,10 +7,8 @@
 </head>
 <body>
     <h1>Ended Groups and Expenses</h1>
-    <h2>Welcome, {{ username }}!</h2>
 
     <div>
-        <h3>Your Ended Groups</h3>
         {% if rooms_dict %}
             <ul>
                 {% for room_id, room_info in rooms_dict.items() %}
@@ -48,10 +46,15 @@
 
     <div>
         <a href="{{ url_for('home') }}">Dashboard</a>
-        <a href="{{ url_for('groups_expenses') }}">View Active Groups</a>
-        <a href="{{ url_for('code') }}">Join a Group</a>
         <a href="{{ url_for('groups') }}">Create Group</a>
+        <a href="{{ url_for('code') }}">Join a Group</a>
         <a href="{{ url_for('profile') }}">Profile</a>
+        <a href="{{ url_for('base') }}">Logout</a>
+        
+        <a href="{{ url_for('home') }}">Dashboard</a>
+        <a href="{{ url_for('history') }}">History</a>
+        <a href="{{ url_for('active_groups') }}">Statistics</a>
+        <a href="{{ url_for('activity') }}">Activity</a>
     </div>
 </body>
 </html>

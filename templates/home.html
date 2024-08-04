@@ -110,14 +110,20 @@
             </li>
 
             <li>
-                <a href="#">
-                    <span>All Expenses</span>
+                <a href="{{ url_for('history') }}">
+                    <span>History</span>
                 </a>
             </li>
 
             <li>
-                <a href="#">
+                <a href="{{ url_for('active_groups') }}">
                     <span>Statistics</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('activity') }}">
+                    <span>Activity</span>
                 </a>
             </li>
         </ul>
@@ -161,13 +167,12 @@
             <ul>
                 {% for room_id, room_info in rooms_dict.items() %}
                     <li>
-                        <strong>{{ room_info.group_name }}</strong> (created on: {{ room_info.created_at.strftime('%b %d, %Y') }})
+                        <strong>{{ room_info.group_name }}</strong> 
                         {% if room_info.is_active %}
                             {% if username == room_info.creator %}
                                 <div class="action-buttons">
                                     <a href="{{ url_for('mainF', room_id=room_id) }}" class="button">Add Expense</a>
                                     <a href="{{ url_for('settle_up', room_id=room_id) }}" class="button">Settle Up</a>
-                                    <a href="{{ url_for('statistics', room_id=room_id) }}" class="button">View Statistics</a>
                                 </div>
                             {% endif %}
                             <ul>

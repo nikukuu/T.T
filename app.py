@@ -179,6 +179,7 @@ def sign_up():
 
 #dashboard
 @app.route('/home')
+@login_required
 def home():
     username = current_user.username
     profile_picture = current_user.profile_picture
@@ -199,11 +200,44 @@ def home():
         WHERE lender = %s
         GROUP BY borrower
     """, (username,))
-    borrowers = cur.fetchall()
+    lenders = cur.fetchall()
+
+    # Fetch active rooms the user is part of
+    cur.execute("""
+        SELECT rooms.room_id, rooms.group_name, rooms.creator, rooms.created_at, rooms.is_active, rooms.ended_at
+        FROM rooms 
+        JOIN members ON rooms.room_id = members.room_id 
+        WHERE members.username = %s AND rooms.is_active = 1
+        ORDER BY rooms.created_at DESC
+    """, (username,))
+    rooms = cur.fetchall()
+
+    rooms_dict = {room['room_id']: room for room in rooms}
+    
+    # Fetch expenses for the rooms
+    expenses_dict = {}
+    for room_id in rooms_dict:
+        cur.execute("""
+            SELECT id, description, amount, paid_by, created_at 
+            FROM expenses 
+            WHERE room_id = %s
+        """, (room_id,))
+        expenses_dict[room_id] = cur.fetchall()
+    
+    # Fetch members for the rooms
+    members_dict = {}
+    for room_id in rooms_dict:
+        cur.execute("""
+            SELECT username 
+            FROM members 
+            WHERE room_id = %s
+        """, (room_id,))
+        members = cur.fetchall()
+        members_dict[room_id] = [member['username'] for member in members]
 
     cur.close()
 
-    return render_template('home.html', username=username, total_owed=total_owed, borrowers=borrowers, profile_picture=profile_picture)
+    return render_template('home.html', username=username, total_owed=total_owed, lenders=lenders, rooms_dict=rooms_dict, expenses_dict=expenses_dict, members_dict=members_dict, profile_picture=profile_picture)
 
 #user profile    
 @app.route('/profile')
@@ -287,6 +321,8 @@ def logout():
 @app.route('/groups', methods=['POST', 'GET'])
 @login_required
 def groups():
+    username = current_user.username
+    profile_picture = current_user.profile_picture
     qr_code_url = None
     room_id = None  # Initialize room_id to None
     if request.method == 'POST' and request.form.get('action') == 'create_group':
@@ -333,12 +369,37 @@ def groups():
         mysql.connection.commit()
         cur.close()
 
-    return render_template('groups.html', qr_code_url=qr_code_url, room_id=room_id)
+    return render_template('groups.html', qr_code_url=qr_code_url, room_id=room_id, username=username, profile_picture=profile_picture)
+
+@app.route('/active_groups')
+@login_required
+def active_groups():
+    username = current_user.username
+    profile_picture = current_user.profile_picture
+
+    cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    
+    # Fetch active rooms the user is part of
+    cur.execute("""
+        SELECT rooms.room_id, rooms.group_name
+        FROM rooms 
+        JOIN members ON rooms.room_id = members.room_id 
+        WHERE members.username = %s AND rooms.is_active = 1
+        ORDER BY rooms.created_at DESC
+    """, (username,))
+    rooms = cur.fetchall()
+    
+    cur.close()
+
+    return render_template('active_groups.html', rooms=rooms, username=username, profile_picture=profile_picture)
 
 #join a room
 @app.route('/join/<int:room_id>', methods=['GET'])
 @login_required
 def join(room_id):
+    username = current_user.username
+    profile_picture = current_user.profile_picture
+
     if 'username' in session:
         username = session['username']
         cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
@@ -405,14 +466,16 @@ def join(room_id):
 
         has_expenses = len(expenses) > 0
 
-        return render_template('room.html', room_id=room_id, debts=debts, expenses=expenses, has_expenses=has_expenses, members=members, group_name=group_name)
+        return render_template('room.html', room_id=room_id, debts=debts, expenses=expenses, has_expenses=has_expenses, members=members, group_name=group_name, username=username, profile_picture=profile_picture)
     else:
         return redirect(url_for('login'))
     
 @app.route('/code')
 @login_required
 def code():
-    return render_template('code.html')
+    username = current_user.username
+    profile_picture = current_user.profile_picture
+    return render_template('code.html', username=username, profile_picture=profile_picture)
 
 #qr scanner
 @app.route('/scan_qr')
@@ -448,6 +511,9 @@ def scan_qr():
 @app.route('/join_by_code', methods=['POST', 'GET'])
 @login_required
 def join_by_code():
+    username = current_user.username
+    profile_picture = current_user.profile_picture
+
     if 'username' in session:
         username = session['username']
         room_id = request.form.get('room_id')  # Using .get() to avoid KeyError
@@ -469,13 +535,17 @@ def join_by_code():
             flash('Room ID is required. Please try again.', 'danger')
             return redirect(url_for('scan_qr'))
     else:
-        return redirect(url_for('login'))
+        return redirect(url_for('login', username=username, profile_picture=profile_picture))
 
 #main function
 @app.route('/mainF/<int:room_id>', methods=['GET'])
 @login_required
 def mainF(room_id):
     username = session.get('username')
+
+    username = current_user.username
+    profile_picture = current_user.profile_picture
+
     if not username:
         return redirect(url_for('login'))
 
@@ -500,11 +570,14 @@ def mainF(room_id):
     success = request.args.get('success', None)
 
     return render_template('mainF.html', room_id=room_id, members=members, expenses=expenses,
-                           has_expenses=has_expenses, username=username, room_info=room_info, success=success)
+                           has_expenses=has_expenses, username=username, room_info=room_info, success=success, profile_picture=profile_picture)
 
 #calculation
 @app.route('/add_expense', methods=['POST'])
 def add_expense():
+    username = current_user.username
+    profile_picture = current_user.profile_picture
+
     if 'username' in session:
         description = request.form['description']
         expense = float(request.form['expense'])
@@ -560,11 +633,14 @@ def add_expense():
             return redirect(url_for('mainF', room_id=room_id, success='False'))
     else:
         print("User not in session, redirecting to login.")
-        return redirect(url_for('login'))
+        return redirect(url_for('login', username=username, profile_picture=profile_picture))
     
 # Groups and expenses
 @app.route('/groups_expenses')
 def groups_expenses():
+    username = current_user.username
+    profile_picture = current_user.profile_picture
+
     if 'username' in session:
         username = session['username']
         
@@ -605,13 +681,16 @@ def groups_expenses():
         
         cur.close()
         
-        return render_template('groups_expenses.html', username=username, rooms_dict=rooms_dict, expenses_dict=expenses_dict, members_dict=members_dict)
+        return render_template('groups_expenses.html', username=username, rooms_dict=rooms_dict, expenses_dict=expenses_dict, members_dict=members_dict, profile_picture=profile_picture)
     else:
         return redirect(url_for('login'))
 
 #edit expense
 @app.route('/edit_expense/<int:expense_id>', methods=['GET', 'POST'])
 def edit_expense(expense_id):
+    username = current_user.username
+    profile_picture = current_user.profile_picture
+
     if 'username' in session:
         username = session['username']
         cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
@@ -668,12 +747,15 @@ def edit_expense(expense_id):
             members = cur.fetchall()
             cur.close()
 
-            return render_template('edit_expense.html', expense=expense, members=members)
+            return render_template('edit_expense.html', expense=expense, members=members, username=username, profile_picture=profile_picture)
     else:
         return redirect(url_for('login'))
 
 @app.route('/delete_expense/<int:expense_id>', methods=['POST'])
 def delete_expense(expense_id):
+    username = current_user.username
+    profile_picture = current_user.profile_picture
+
     if 'username' in session:
         cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         
@@ -707,7 +789,7 @@ def delete_expense(expense_id):
 
             cur.close()
 
-        return redirect(url_for('groups_expenses'))
+        return redirect(url_for('groups_expenses', username=username, profile_picture=profile_picture))
     else:
         return redirect(url_for('login'))
 
@@ -716,6 +798,9 @@ def delete_expense(expense_id):
 def settle_up(room_id):
     username = session['username']
     room_info = get_room_info(room_id)
+
+    username = current_user.username
+    profile_picture = current_user.profile_picture
     
     # Ensure the user is the creator of the room
     if username != room_info['creator']:
@@ -754,10 +839,13 @@ def settle_up(room_id):
 
     # Get the members of the group
     members = get_room_members(room_id)
-    return render_template('settle_up.html', room_id=room_id, members=members, username=username)
+    return render_template('settle_up.html', room_id=room_id, members=members, username=username, profile_picture=profile_picture)
 
 @app.route('/end_group/<int:room_id>', methods=['POST'])
 def end_group(room_id):
+    username = current_user.username
+    profile_picture = current_user.profile_picture
+
     if 'username' in session:
         username = session['username']
         
@@ -797,7 +885,7 @@ def end_group(room_id):
         
         # Get the members of the group
         members = get_room_members(room_id)
-        return redirect(url_for('groups_expenses', room_id=room_id, members=members, username=username))
+        return redirect(url_for('groups_expenses', room_id=room_id, members=members, username=username, profile_picture=profile_picture))
     else:
         return redirect(url_for('login'))
 
@@ -818,6 +906,9 @@ def get_room_members(room_id):
 
 @app.route('/activity')
 def activity():
+    username = current_user.username
+    profile_picture = current_user.profile_picture
+
     if 'username' in session:
         username = session['username']
         cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
@@ -843,12 +934,15 @@ def activity():
             am_pm = activity_time.strftime('%p')
             activity['activity_time'] = f"{month} {day}, {hour}:{minute} {am_pm}"
 
-        return render_template('activity.html', activities=activities)
+        return render_template('activity.html', activities=activities, username=username, profile_picture=profile_picture)
     else:
         return redirect(url_for('login'))
     
 @app.route('/history')
 def history():
+    username = current_user.username
+    profile_picture = current_user.profile_picture
+
     if 'username' in session:
         username = session['username']
         
@@ -889,12 +983,16 @@ def history():
         
         cur.close()
         
-        return render_template('history.html', username=username, rooms_dict=rooms_dict, expenses_dict=expenses_dict, members_dict=members_dict)
+        return render_template('history.html', username=username, rooms_dict=rooms_dict, expenses_dict=expenses_dict, members_dict=members_dict, profile_picture=profile_picture)
     else:
         return redirect(url_for('login'))
 
+#statistics
 @app.route('/statistics/<int:room_id>')
 def statistics(room_id):
+    username = current_user.username
+    profile_picture = current_user.profile_picture
+
     if 'username' in session:
         username = session['username']
         
@@ -921,11 +1019,9 @@ def statistics(room_id):
             month_index = expense['month'] - 1
             expenses[month_index] = expense['total_expenses']
 
-        return render_template('statistics.html', username=username, months=months, expenses=expenses, room_id=room_id)
+        return render_template('statistics.html', username=username, months=months, expenses=expenses, room_id=room_id, profile_picture=profile_picture)
     else:
         return redirect(url_for('login'))
-
-
 
 if __name__ == '__main__':
     app.run(debug=True)
