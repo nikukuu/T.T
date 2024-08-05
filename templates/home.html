@@ -1,11 +1,14 @@
 <!DOCTYPE html>
+
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-   <title>SplitSHare</title>
+   <title>SplitShare</title>
+
     <link rel="stylesheet" href="/static/css/home.css" />
+  
     <link
       href="https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css"
       rel="stylesheet"
@@ -47,6 +50,13 @@
                 <a href="{{ url_for('code') }}" class="nav-link">
                   
                   <span class="link">Join Group</span>
+                </a>
+              </li>
+
+              <li class="list">
+                <a href="{{ url_for('groups_expenses') }}" class="nav-link">
+                  
+                  <span class="link">Groups</span>
                 </a>
               </li>
 
@@ -110,6 +120,7 @@
         </div>
     </section>
     
+    <!--
     <section class="groups-and-expenses">
         <div class="container">
             <h3>Your Active Groups</h3>
@@ -121,8 +132,8 @@
                             {% if room_info.is_active %}
                                 {% if username == room_info.creator %}
                                     <div class="action-buttons">
-                                        <button class="button" onclick="openAddExpensePopup('{{ room_id }}')">Add Expense</button>
-                                        <button class="button" onclick="openSettleUpPopup('{{ room_id }}')">Settle Up</button>
+                                        <a href="{{ url_for('mainF', room_id=room_id) }}" class="button">Add Expense</a>
+                                        <a href="{{ url_for('settle_up', room_id=room_id) }}" class="button">Settle Up</a>
                                     </div>
                                 {% endif %}
                                 <ul class="expenses-list">
@@ -135,7 +146,7 @@
                                                     <li>{{ expense.paid_by }} paid ₱{{ expense.amount }}</li>
                                                     <li>Added on: {{ expense.created_at.strftime('%b %d, %Y') }}</li>
                                                     {% if username == room_info.creator %}
-                                                        <button onclick="openEditExpensePopup('{{ expense.id }}', '{{ expense.description }}', '{{ expense.amount }}', '{{ expense.paid_by }}')">Edit Expense</button>
+                                                        <a href="{{ url_for('edit_expense', expense_id=expense.id) }}" class="edit-expense-link">Edit Expense</a>
                                                     {% endif %}
                                                     <ul class="members-contributions">
                                                         {% for member in members_dict[room_id] %}
@@ -164,95 +175,8 @@
         </div>
     </section>
 
-    <!-- Popup form containers -->
-    <div id="addExpensePopup" class="popup">
-        <div class="popup-content">
-            <span class="close-btn" onclick="closeAddExpensePopup()">&times;</span>
-            <h2>Add an expense</h2>
-            <form action="{{ url_for('add_expense') }}" method="POST">
-                <p>Enter description:</p>
-                <input type="text" name="description" required>
-                <p>Expense: ₱<input type="number" step="0.01" name="expense" required></p>
-                <p>Paid by:
-                    <select name="paid_by" required>
-                        {% for member in members %}
-                            <option value="{{ member.username }}">{{ member.username }}</option>
-                        {% endfor %}
-                    </select>
-                </p>
-                <input type="hidden" name="room_id" id="popupRoomId">
-                <button type="submit">Add Expense</button>
-            </form>
-        </div>
-    </div>
-
-    <div id="settleUpPopup" class="popup">
-        <div class="popup-content">
-            <span class="close-btn" onclick="closeSettleUpPopup()">&times;</span>
-            <h2>Settle Up</h2>
-            <form action="{{ url_for('settle_up', room_id=room_id) }}" method="post">
-                <div>
-                    <label for="payer">Payer:</label>
-                    <select name="payer" id="payer" required>
-                        {% for member in members %}
-                            <option value="{{ member.username }}">{{ member.username }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div>
-                    <label for="recipient">Recipient:</label>
-                    <select name="recipient" id="recipient" required>
-                        {% for member in members %}
-                            <option value="{{ member.username }}">{{ member.username }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div>
-                    <label for="amount">Amount:</label>
-                    <input type="number" name="amount" id="amount" step="0.01" required>
-                </div>
-                <div>
-                    <label for="date">Date:</label>
-                    <input type="date" name="date" id="date" required>
-                </div>
-                <div>
-                    <label for="payment_method">Payment Method:</label>
-                    <select name="payment_method" id="payment_method" required>
-                        <option value="cash">Cash</option>
-                        <option value="e-wallet">E-Wallet (Gcash)</option>
-                    </select>
-                </div>
-                <button type="submit">Save</button>
-            </form>
-        </div>
-    </div>
-
-    <div id="editExpensePopup" class="popup">
-        <div class="popup-content">
-            <span class="close-btn" onclick="closeEditExpensePopup()">&times;</span>
-            <h2>Edit Expense</h2>
-            <form action="{{ url_for('edit_expense') }}" method="POST">
-                <input type="hidden" name="expense_id" id="editExpenseId">
-                <p>Enter description:</p>
-                <input type="text" name="description" id="editDescription" required>
-                <p>Expense: ₱<input type="number" step="0.01" name="amount" id="editAmount" required></p>
-                <p>Paid by:
-                    <select name="paid_by" id="editPaidBy" required>
-                        {% for member in members %}
-                            <option value="{{ member.username }}">{{ member.username }}</option>
-                        {% endfor %}
-                    </select>
-                </p>
-                <input type="hidden" name="room_id" id="editRoomId">
-                <button type="submit">Save Changes</button>
-            </form>
-        </div>
-    </div>
-
-	
+	-->
 
     <script src="/static/js/dashboard.js"></script>
-    <script src="/static/js/addexpense.js"></script>
-    <script src="/static/js/settleup.js"></script>
   </body>
 </html>

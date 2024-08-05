@@ -1,7 +1,5 @@
-/* Import Google Fonts */
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap");
 
-/* General Styles */
 body {
     font-family: 'Poppins', sans-serif;
     background-color: #f4f4f4;
@@ -9,7 +7,6 @@ body {
     padding: 0;
 }
 
-/* Container styling for forms */
 .container {
     max-width: 600px;
     margin: 30px auto;
@@ -19,7 +16,12 @@ body {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Form elements styling */
+h1 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 20px;
+}
+
 form {
     display: flex;
     flex-direction: column;
@@ -45,7 +47,6 @@ form {
     font-size: 16px;
 }
 
-/* Button styling */
 .submit-button {
     padding: 10px 15px;
     border: none;
@@ -59,23 +60,4 @@ form {
 
 .submit-button:hover {
     background-color: #305bb5;
-}
-
-/* Success and Error Messages */
-.success-message,
-.error-message {
-    font-size: 16px;
-    padding: 10px;
-    border-radius: 5px;
-    margin-bottom: 15px;
-}
-
-.success-message {
-    color: #4caf50;
-    background-color: #e8f5e9;
-}
-
-.error-message {
-    color: #f44336;
-    background-color: #ffebee;
 }

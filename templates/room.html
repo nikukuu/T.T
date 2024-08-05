@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Room {{ room_id }}</title>
+    <link rel="stylesheet" href="/static/css/room.css">
 </head>
 <body>
     <h1>Group name: {{ group_name }}</h1>
@@ -26,9 +27,7 @@
     {% endif %}
 
     <a href="{{ url_for('home') }}">Dashboard</a>
-    <a href="{{ url_for('groups_expenses') }}">View Groups and Expenses</a>
-    <a href="{{ url_for('groups') }}">Create Group</a>
-    <a href="{{ url_for('profile') }}">Profile</a>
+
 
 </body>
 </html>

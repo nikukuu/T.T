@@ -4,60 +4,60 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Main Function</title>
-    <link rel="stylesheet" href="/static/css/mainF.css"> <!-- Optional CSS for styling -->
+    <link rel="stylesheet" href="/static/css/mainF.css"> 
 </head>
 <body>
-    <header>
-        <h1>Add an expense</h1>
-    </header>
     
     <main>
-        {% if success == 'True' %}
-            <p>Expense successfully added!</p>
-        {% elif success == 'False' %}
-            <p>Failed to add expense. Please try again.</p>
-        {% endif %}
-
-        <hr>
-
-        {% if room_id %}
-            <p>Room ID: {{ room_id }}</p>
-            <h2>Members who have joined:</h2>
-            <ul>
-                {% for member in members %}
-                    <li>{{ member.username }}</li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p>No rooms have been created yet.</p>
-        {% endif %}
         
-        <hr>
+        <div class="container">
+            {% if success == 'True' %}
+                <p class="success-message">Expense successfully added!</p>
+            {% elif success == 'False' %}
+                <p class="error-message">Failed to add expense. Please try again.</p>
+            {% endif %}
 
-        {% if username == room_info.creator %}
-            <form action="{{ url_for('add_expense') }}" method="POST">
-                <p>Enter description:</p>
-                <input type="text" name="description" required>
-                <p>Expense: ₱<input type="number" step="0.01" name="expense" required></p>
-                <p>Paid by:
-                    <select name="paid_by" required>
-                        {% for member in members %}
-                            <option value="{{ member.username }}">{{ member.username }}</option>
-                        {% endfor %}
-                    </select>
-                </p>
-                <input type="hidden" name="room_id" value="{{ room_id }}">
-                <button type="submit">Add Expense</button>
-            </form>
-        {% endif %}
+            <hr>
 
-        <hr>
+            {% if room_id %}
+                <p>Room ID: {{ room_id }}</p>
+                <h2>Members who have joined:</h2>
+                <ul>
+                    {% for member in members %}
+                        <li>{{ member.username }}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No rooms have been created yet.</p>
+            {% endif %}
+            
+            <hr>
 
- 
+            {% if username == room_info.creator %}
+                <form action="{{ url_for('add_expense') }}" method="POST">
+                    <div class="form-group">
+                        <label for="description">Enter description:</label>
+                        <input type="text" name="description" id="description" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="expense">Expense:</label>
+                        <input type="number" step="0.01" name="expense" id="expense" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="paid_by">Paid by:</label>
+                        <select name="paid_by" id="paid_by" required>
+                            {% for member in members %}
+                                <option value="{{ member.username }}">{{ member.username }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <input type="hidden" name="room_id" value="{{ room_id }}">
+                    <button type="submit" class="submit-button">Add Expense</button>
+                </form>
+            {% endif %}
+        </div>
     </main>
 
-
-
-    <script src="/static/js/script.js"></script> <!-- Optional JavaScript file -->
+    <script src="/static/js/script.js"></script> 
 </body>
 </html>
