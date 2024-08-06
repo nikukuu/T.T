@@ -50,6 +50,141 @@
             <button class="end-session">End Session</button>
         </div>
     </div>
+
+    <div id="add-expense-popup" class="popup">
+        <div class="popup-content">
+            <span class="close">&times;</span>
+            <h3>Add an Expense</h3>
+            <form id="add-expense-form">
+                <label for="description">Description:</label>
+                <input type="text" id="description" name="description" required>
+
+                <label for="amount">Amount:</label>
+                <input type="number" id="amount" name="amount" step="0.01" required>
+
+                <label for="paid-by">Paid by:</label>
+                <select id="paid-by" name="paid-by" required>
+                    <!-- User options will be dynamically added -->
+                </select>
+
+                <label for="split">Split:</label>
+                <select id="split" name="split">
+                    <option value="equally">Equally</option>
+                    <option value="custom">Custom</option>
+                </select>
+
+                <div id="custom-amount-container" style="display: none;">
+                    <label for="custom-amount">Enter amount:</label>
+                    <input type="number" id="custom-amount" name="custom-amount" step="0.01">
+                </div>
+
+                <button type="submit">Add Expense</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="edit-expense-popup" class="popup">
+        <div class="popup-content">
+            <span class="close-edit-expense">&times;</span>
+            <h3>Edit Expense</h3>
+            <form id="edit-expense-form">
+                <input type="hidden" id="edit-expense-id"> <!-- Hidden field to store expense ID -->
+                <label for="edit-description">Description:</label>
+                <input type="text" id="edit-description" name="description" required>
+    
+                <label for="edit-amount">Amount:</label>
+                <input type="number" id="edit-amount" name="amount" step="0.01" required>
+    
+                <label for="edit-paid-by">Paid by:</label>
+                <select id="edit-paid-by" name="paid-by" required>
+                    <!-- User options will be dynamically added -->
+                </select>
+    
+                <button type="submit">Save Changes</button>
+                <button type="button" id="cancel-edit-expense">Cancel</button>
+            </form>
+        </div>
+    </div>
+    
+
+    <!-- Popup for Custom Amount -->
+    <div id="custom-amount-popup" class="popup">
+        <div class="popup-content">
+            <span class="close-custom-amount">&times;</span>
+            <h3>Custom Split Amount</h3>
+            <form id="custom-amount-form">
+                <label for="custom-amount">Enter amount:</label>
+                <input type="number" id="custom-amount" name="custom-amount" step="0.01" required>
+
+                <button type="submit">Save</button>
+                <button type="button" id="cancel-custom-amount">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+   <!-- Popup for Settlement Method -->
+<div id="settle-method-popup" class="popup">
+    <div class="popup-content">
+        <span class="close-settle-method">&times;</span>
+        <h3>Choose Payment Method</h3>
+        <button id="cash">Cash</button>
+        <button id="e-wallet">E-wallet</button>
+    </div>
+</div>
+
+  <!-- Popup for Settlement Details -->
+  <div id="settle-details-popup" class="popup">
+    <div class="popup-content">
+        <span class="close-settle-details">&times;</span>
+        <h3>Settlement Details</h3>
+        <form id="settle-details-form">
+            <label for="paid-by">Paid by:</label>
+            <select id="paid-by" name="paid-by" required>
+                <!-- User options will be dynamically added -->
+            </select>
+
+            <label for="paid-to">Paid to:</label>
+            <select id="paid-to" name="paid-to" required>
+                <!-- User options will be dynamically added -->
+            </select>
+
+            <label for="amount-paid">Amount:</label>
+            <input type="number" id="amount-paid" name="amount-paid" step="0.01" required>
+
+            <label for="date">Date:</label>
+            <input type="date" id="date" name="date" required>
+
+            <button type="submit">Save</button>
+            <button type="button" id="cancel-settle-details">Cancel</button>
+        </form>
+    </div>
+</div>
+
+<!-- Popup for Editing Expense -->
+<div id="edit-expense-popup" class="popup">
+    <div class="popup-content">
+        <span class="close-edit-expense">&times;</span>
+        <h3>Edit Expense</h3>
+        <form id="edit-expense-form">
+            <input type="hidden" id="edit-expense-id"> <!-- Hidden field to store expense ID -->
+            <label for="edit-description">Description:</label>
+            <input type="text" id="edit-description" name="description" required>
+
+            <label for="edit-amount">Amount:</label>
+            <input type="number" id="edit-amount" name="amount" step="0.01" required>
+
+            <label for="edit-paid-by">Paid by:</label>
+            <select id="edit-paid-by" name="paid-by" required>
+                <!-- User options will be dynamically added -->
+            </select>
+
+            <button type="submit">Save Changes</button>
+            <button type="button" id="cancel-edit-expense">Cancel</button>
+        </form>
+    </div>
+</div>
+
+    <script src="/static/js/add-expense.js"></script>
     
 </body>
 </html>
