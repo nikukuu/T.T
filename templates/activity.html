@@ -4,29 +4,111 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Activity Log</title>
+    <link rel="stylesheet" href="/static/css/activity_log.css">
+    <link
+        href="https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css"
+        rel="stylesheet"
+    />
 </head>
 <body>
-    <h1>Activity Log</h1>
-    <ul>
-        {% for activity in activities %}
-            <li class="activity-item">
-                <span class="activity-description"> {{ activity.activity }}</span><br>
-                <span class="activity-time"> {{ activity.activity_time }}</span>
-            </li>
-        {% endfor %}
-    </ul>
-    
-    <div>
-        <a href="{{ url_for('home') }}">Dashboard</a>
-        <a href="{{ url_for('groups') }}">Create Group</a>
-        <a href="{{ url_for('code') }}">Join a Group</a>
-        <a href="{{ url_for('profile') }}">Profile</a>
-        <a href="{{ url_for('base') }}">Logout</a>
+    <nav>
+        <div class="logo">
+            <i class="bx bx-menu menu-icon"></i>
+            <a href="{{ url_for('homepage') }}" class="hideOnMobile">
+                <img src="/static/images/favicon_30.png" alt="logo" class="logo">
+            </a>
+        </div>
         
-        <a href="{{ url_for('home') }}">Dashboard</a>
-        <a href="{{ url_for('history') }}">History</a>
-        <a href="{{ url_for('active_groups') }}">Statistics</a>
-        <a href="{{ url_for('activity') }}">Activity</a>
-    </div>
+        <div class="sidebar">
+            <div class="logo">
+                <i class="bx bx-menu menu-icon"></i>
+                <span class="logo-name">SplitShare</span>
+            </div>
+
+            <div class="sidebar-content">
+                <ul class="lists">
+                    <li class="list dropdown">
+                        <div class="dropdown-toggle" id="dashboard-toggle">
+                            <a href="{{ url_for('home') }}" class="nav-link">
+                                <i class="bx bx-home-alt icon"></i>
+                                <span class="link">Dashboard</span>
+                            </a>
+                            <i class="bx bx-chevron-down icon"></i>
+                        </div>
+                        <div class="dropdown-content" id="dropdown-menu">
+                            <a href="{{ url_for('groups') }}" class="nav-link">
+                                <i class="bx bx-group icon"></i> Create Group
+                            </a>
+                            <a href="{{ url_for('code') }}" class="nav-link">
+                                <i class="bx bx-code-alt icon"></i> Join Group
+                            </a>
+                            <a href="{{ url_for('groups_expenses') }}" class="nav-link">
+                                <i class="bx bx-calendar icon"></i> Groups
+                            </a>
+                        </div>
+                    </li>
+                    <li class="list">
+                        <a href="{{ url_for('activity') }}" class="nav-link">
+                            <i class="bx bx-time-five icon"></i>
+                            <span class="link">Recent Activity</span>
+                        </a>
+                    </li>
+                    <li class="list">
+                        <a href="{{ url_for('active_groups') }}" class="nav-link">
+                            <i class="bx bx-pie-chart-alt-2 icon"></i>
+                            <span class="link">Analytics</span>
+                        </a>
+                    </li>
+                    <li class="list">
+                        <a href="{{ url_for('history') }}" class="nav-link">
+                            <i class="bx bx-time icon"></i>
+                            <span class="link">History</span>
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="bottom-content">
+                    <li class="list">
+                        <a href="{{ url_for('profile') }}" class="nav-link">
+                            <i class="bx bx-user icon"></i>
+                            <span class="link">Profile</span>
+                        </a>
+                    </li>
+                    <li class="list">
+                        <a href="{{ url_for('base') }}" class="nav-link">
+                            <i class="bx bx-log-out icon"></i>
+                            <span class="link">Logout</span>
+                        </a>
+                    </li>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <h1>Activity Log</h1>
+        <ul>
+            {% for activity in activities %}
+                <li class="activity-item">
+                    <span class="activity-description">{{ activity.activity }}</span>
+                    <span class="activity-time">{{ activity.activity_time }}</span>
+                </li>
+            {% endfor %}
+        </ul>
+    </main>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const dashboardToggle = document.getElementById('dashboard-toggle');
+            const dropdownMenu = document.getElementById('dropdown-menu');
+            const icon = dashboardToggle.querySelector('.bx-chevron-down');
+
+            dashboardToggle.addEventListener('click', function() {
+                dropdownMenu.classList.toggle('show');
+                icon.classList.toggle('rotate');
+            });
+        });
+    </script>
+    <script src="/static/js/dashboard.js"></script>
 </body>
 </html>

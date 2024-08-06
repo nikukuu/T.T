@@ -234,3 +234,86 @@ textarea {
 .saved-links a:hover {
   text-decoration: underline;
 }
+
+.dropdown-content {
+  display: none;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.5s ease-out;
+}
+
+.dropdown-content.show {
+  display: block;
+  max-height: 300px; /* Adjust as needed */
+}
+
+.dropdown-toggle {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.dropdown-toggle i {
+  margin-left: 8px; /* Adjust this value to move the icon closer */
+  transition: transform 0.3s ease;
+}
+
+.dropdown-toggle.rotate i {
+  transform: rotate(180deg);
+}
+
+/* Dropdown Links Styling */
+.dropdown-content a {
+  display: flex;
+  align-items: center;
+  margin: 8px 0;
+  padding: 14px 12px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: #707070; /* Match the text color */
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.dropdown-content a:hover {
+  background-color: #4d84e2; /* Match the hover color of other nav links */
+  color: #fff; /* Text color on hover */
+}
+
+.dropdown-content a .icon {
+  margin-right: 14px;
+  font-size: 20px;
+  color: #707070; /* Match the icon color */
+}
+
+.dropdown-content a:hover .icon {
+  color: #fff; /* Icon color on hover */
+}
+
+/* Ensure Dashboard link is unaffected */
+.nav-link {
+  display: flex;
+  align-items: center;
+  margin: 8px 0;
+  padding: 14px 12px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: #707070; /* Match the text color */
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.nav-link:hover {
+  background-color: #4d84e2; /* Match the hover color of other nav links */
+  color: #fff; /* Text color on hover */
+}
+
+.nav-link .icon {
+  margin-right: 14px;
+  font-size: 20px;
+  color: #707070; /* Match the icon color */
+}
+
+.nav-link:hover .icon {
+  color: #fff; /* Icon color on hover */
+}

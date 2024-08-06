@@ -1,3 +1,4 @@
+/* General Styles */
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap");
 
 :root {
@@ -17,6 +18,7 @@ body {
   min-height: 100%;
   background: whitesmoke;
 }
+
 nav {
   position: fixed;
   top: 0;
@@ -28,22 +30,26 @@ nav {
   background: #fff;
   box-shadow: 0 0 1px rgba(0, 0, 0, 0.1);
 }
+
 nav .logo {
   display: flex;
   align-items: center;
   margin: 0 24px;
 }
+
 .logo .menu-icon {
   color: #333;
   font-size: 24px;
   margin-right: 14px;
   cursor: pointer;
 }
+
 .logo .logo-name {
   color: #333;
   font-size: 22px;
   font-weight: 500;
 }
+
 nav .sidebar {
   position: fixed;
   top: 0;
@@ -55,9 +61,11 @@ nav .sidebar {
   box-shadow: 0 5px 1px rgba(0, 0, 0, 0.1);
   transition: all 0.4s ease;
 }
+
 nav.open .sidebar {
   left: 0;
 }
+
 .sidebar .sidebar-content {
   display: flex;
   height: 100%;
@@ -65,9 +73,11 @@ nav.open .sidebar {
   justify-content: space-between;
   padding: 30px 16px;
 }
+
 .sidebar-content .list {
   list-style: none;
 }
+
 .list .nav-link {
   display: flex;
   align-items: center;
@@ -76,23 +86,29 @@ nav.open .sidebar {
   border-radius: 8px;
   text-decoration: none;
 }
+
 .lists .nav-link:hover {
-  background-color: #4d84e2; 
+  background-color: #4d84e2; /* Background color on hover */
+  color: #fff; /* Text color on hover */
 }
+
 .nav-link .icon {
   margin-right: 14px;
   font-size: 20px;
   color: #707070;
 }
+
 .nav-link .link {
   font-size: 16px;
   color: #707070;
   font-weight: 400;
 }
+
 .lists .nav-link:hover .icon,
 .lists .nav-link:hover .link {
   color: #fff;
 }
+
 .overlay {
   position: fixed;
   top: 0;
@@ -104,226 +120,198 @@ nav.open .sidebar {
   transition: all 0.4s ease;
   background: rgba(0, 0, 0, 0.3);
 }
+
 nav.open ~ .overlay {
   opacity: 1;
   left: 260px;
   pointer-events: auto;
 }
 
-.groups-and-expenses {
-    padding: 20px;
-    background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    margin: 20px 0;
-  }
-  
-  .groups-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-  
-  .group-item {
-    margin-bottom: 20px;
-    border-bottom: 1px solid #ddd;
-    padding-bottom: 10px;
-  }
-  
-  .group-item:last-child {
-    border-bottom: none;
-  }
-  
-  .action-buttons {
-    margin: 10px 0;
-  }
-  
-  .button {
-    display: inline-block;
-    padding: 10px 15px;
-    margin-right: 10px;
-    border-radius: 5px;
-    text-decoration: none;
-    color: #fff;
-    background: #4070f4;
-    transition: background 0.3s ease;
-  }
-  
-  .button:hover {
-    background: #305bb5;
-  }
-  
-  .expenses-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-  
-  .expense-item {
-    margin-bottom: 15px;
-    border: 1px solid #ddd;
-    padding: 10px;
-    border-radius: 5px;
-    background: #f9f9f9;
-  }
-  
-  .expense-details {
-    list-style: none;
-    padding: 0;
-    margin: 10px 0;
-  }
-  
-  .edit-expense-link {
-    display: inline-block;
-    margin-top: 10px;
-    color: #4070f4;
-    text-decoration: none;
-  }
-  
-  .edit-expense-link:hover {
-    text-decoration: underline;
-  }
-  
-  .members-contributions {
-    list-style: none;
-    padding: 0;
-    margin: 10px 0 0;
-  }
-
-
-  .home {
-    padding: 20px;
-    background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    margin: 100px 0;
-  }
-  
-  .home .content {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-  
-  .owe-section {
-    display: flex;
-    justify-content: space-between;
-    padding: 20px;
-    background: #f9f9f9;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-  
-  .owe {
-    flex: 1;
-    text-align: center;
-  }
-  
-  .owe h3 {
-    margin-bottom: 10px;
-    font-size: 18px;
-    color: #333;
-  }
-  
-  .amount {
-    font-size: 24px;
-    font-weight: 500;
-    color: #4070f4;
-  }
-  
-  .who-owe {
-    flex: 1;
-    text-align: center;
-  }
-  
-  .who-owe h3 {
-    margin-bottom: 10px;
-    font-size: 18px;
-    color: #333;
-  }
-  
-  .borrowers-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-  
-  .borrowers-list li {
-    margin-bottom: 8px;
-    font-size: 16px;
-    color: #333;
-  }
-  
-  .who-owe p {
-    font-size: 16px;
-    color: #666;
-  } 
-
-  .popup {
-    display: none; /* Hidden by default */
-    position: fixed;
-    z-index: 1; /* Sit on top */
-    left: 0;
-    top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    overflow: auto; /* Enable scroll if needed */
-    background-color: rgb(0,0,0); /* Fallback color */
-    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+/* Styling for Profile and Logout Links */
+.bottom-content .nav-link {
+  background-color: transparent; /* Remove background color */
+  color: #707070; /* Default text color */
 }
 
-.popup-content {
-    background-color: #fefefe;
-    margin: 15% auto; /* 15% from the top and centered */
-    padding: 20px;
-    border: 1px solid #888;
-    width: 80%; /* Could be more or less, depending on screen size */
-    max-width: 600px;
+.bottom-content .nav-link:hover {
+  background-color: transparent; /* Remove background color change on hover */
+  color: #707070; /* Keep text color same on hover */
 }
 
-.close-btn {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
+.bottom-content .nav-link .icon {
+  color: #707070; /* Default icon color */
 }
 
-.close-btn:hover,
-.close-btn:focus {
-    color: black;
-    text-decoration: none;
-    cursor: pointer;
+.bottom-content .nav-link:hover .icon {
+  color: #707070; /* Keep icon color same on hover */
 }
 
-/* Add some styling for the forms inside the pop-ups */
-.popup-content form {
-    display: flex;
-    flex-direction: column;
+/* Specific links styling */
+.nav-link.group,
+.nav-link.join,
+.nav-link.create {
+  color: #707070; /* Default text color */
 }
 
-.popup-content form div {
-    margin-bottom: 15px;
+.nav-link.group:hover,
+.nav-link.join:hover,
+.nav-link.create:hover {
+  color: #fff; /* Text color on hover */
+  background-color: #4d84e2; /* Background color on hover */
 }
 
-.popup-content form input,
-.popup-content form select,
-.popup-content form button {
-    width: 100%;
+/* Home Section Styling */
+.home {
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin: 100px auto; /* Centered margin */
+  max-width: 1200px; /* Max width for better layout */
 }
 
-.popup-content form button {
-    align-self: flex-start;
+.home .content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
-.popup-content {
-  animation: fadeIn 0.3s;
+.owe-section {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+.owe {
+  flex: 1;
+  text-align: center;
 }
 
+.owe h3 {
+  margin-bottom: 10px;
+  font-size: 18px;
+  color: #333;
+}
+
+.amount {
+  font-size: 24px;
+  font-weight: 500;
+  color: #4070f4;
+}
+
+.who-owe {
+  flex: 1;
+  text-align: center;
+}
+
+.who-owe h3 {
+  margin-bottom: 10px;
+  font-size: 18px;
+  color: #333;
+}
+
+.borrowers-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.borrowers-list li {
+  margin-bottom: 8px;
+  font-size: 16px;
+  color: #333;
+}
+
+.who-owe p {
+  font-size: 16px;
+  color: #666;
+}
+
+.dropdown-content {
+  display: none;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.5s ease-out;
+}
+
+.dropdown-content.show {
+  display: block;
+  max-height: 300px; /* Adjust as needed */
+}
+
+.dropdown-toggle {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.dropdown-toggle i {
+  margin-left: 8px; /* Adjust this value to move the icon closer */
+  transition: transform 0.3s ease;
+}
+
+.dropdown-toggle.rotate i {
+  transform: rotate(180deg);
+}
+
+/* Dropdown Links Styling */
+.dropdown-content a {
+  display: flex;
+  align-items: center;
+  margin: 8px 0;
+  padding: 14px 12px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: #707070; /* Match the text color */
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.dropdown-content a:hover {
+  background-color: #4d84e2; /* Match the hover color of other nav links */
+  color: #fff; /* Text color on hover */
+}
+
+.dropdown-content a .icon {
+  margin-right: 14px;
+  font-size: 20px;
+  color: #707070; /* Match the icon color */
+}
+
+.dropdown-content a:hover .icon {
+  color: #fff; /* Icon color on hover */
+}
+
+/* Ensure Dashboard link is unaffected */
+.nav-link {
+  display: flex;
+  align-items: center;
+  margin: 8px 0;
+  padding: 14px 12px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: #707070; /* Match the text color */
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.nav-link:hover {
+  background-color: #4d84e2; /* Match the hover color of other nav links */
+  color: #fff; /* Text color on hover */
+}
+
+.nav-link .icon {
+  margin-right: 14px;
+  font-size: 20px;
+  color: #707070; /* Match the icon color */
+}
+
+.nav-link:hover .icon {
+  color: #fff; /* Icon color on hover */
+}
 
 @media (max-width: 768px) {
   nav .sidebar {
