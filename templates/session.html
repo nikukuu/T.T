@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SplitShare</title>
+    <link rel="stylesheet" href="/static/css/session.css">
+    <link rel="icon" type="image/png" href="/static/images/favicon40.png">
+</head>
+<body>
+
+    <div class="back-button"> <!--Back to list of  groups-->
+        <button>&larr; Back</button> 
+    </div>
+
+    <div class="container">
+        <h3 class="group-name">(group name)</h3>
+        <h5 class="Date"> (Date here)</h5>
+
+        <!-- Display depends sa context per group name okay? baka makalimutan mo -->
+        <div class="expense-list">
+            <div class="expense-item">
+                <div class="price">Price</div>
+                <div class="item">Item</div>
+                <div class="paid-by">Paid by: (user)</div>
+                <button>Edit</button>
+                <button>Remove</button>
+            </div>
+
+            
+            <div class="expense-item"> <!--If you owe-->
+                <div class="price">Price</div>
+                <div class="item">Item</div>
+                <div class="paid-by">You owe: (user)</div>
+                <button>Edit</button>
+                <button>Remove</button>
+            </div>
+
+            <!-- Add more expense items as needed -->
+        </div>
+
+    
+        <div class="button-container">
+            <button>Add an expense</button>
+            <button>Settle up</button>
+        </div>
+
+        <!-- End Session -->
+        <div class="end-session-container">
+            <button class="end-session">End Session</button>
+        </div>
+    </div>
+    
+</body>
+</html>

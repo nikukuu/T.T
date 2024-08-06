@@ -1,0 +1,150 @@
+/* Google Fonts - Poppins */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap");
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: whitesmoke;
+    margin: 0;
+    position: relative; /* For positioning the end-session button */
+}
+
+.container {
+    width: 80%;
+    max-width: 800px;
+    background: #f0f0f0; /* Background color */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    position: relative; /* For positioning child elements */
+}
+
+.group-name {
+    font-size: 24px;
+    margin-bottom: 20px;
+    text-align: left; /* Align text to the left */
+    margin-left: 20px; /* Adjust margin to move text to the left */
+}
+
+.button-container {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    text-align: center;
+}
+
+.button-container button {
+    background-color: #4070f4;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    margin: 5px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.button-container button:hover {
+    background-color: #3050c4;
+}
+
+.expense-list {
+    margin-top: 60px; /* Adjust margin to move the list down */
+    padding: 0;
+    list-style: none;
+}
+
+.expense-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f9f9f9;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.expense-item div {
+    flex: 1;
+    text-align: center;
+}
+
+.price {
+    font-weight: bold;
+}
+
+.paid-by {
+    font-style: italic;
+}
+
+.expense-item button {
+    background-color: #FFC107;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    font-size: 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 10px; /* Add margin between buttons */
+}
+
+.expense-item button:first-child {
+    margin-left: 0; /* Remove margin for the first button */
+}
+
+.expense-item button:hover {
+    background-color: #e0a800;
+}
+
+.end-session-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    text-align: center;
+    z-index: 1000; /* Ensure it's on top of other content */
+}
+
+.end-session {
+    background-color: #d9534f;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.end-session:hover {
+    background-color: #c9302c;
+}
+
+.back-button {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1000; /* Ensure it's on top of other content */
+}
+
+.back-button button {
+    background-color: #4070f4;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.back-button button:hover {
+    background-color: #3050c4;
+}

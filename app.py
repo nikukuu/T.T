@@ -164,7 +164,7 @@ def sign_up():
 
         if existing_user:
             cur.close()
-            return render_template('sign_up.html', error='Username already exists. Please choose a different username.')
+            return render_template('base.html', error='Username already exists. Please choose a different username.')
 
         cur.execute("""
             INSERT INTO register (email, username, password, first_name, last_name, phone_number) 

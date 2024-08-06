@@ -3,91 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Groups</title>
+    <title>SplitShare</title>
     <link rel="stylesheet" href="/static/css/group.css">
     <link
     href="https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css"
     rel="stylesheet"
   />
+  <link rel="icon" type="image/png" href="/static/images/favicon40.png">
 </head>
 <body>
 
-    <nav>
-
+  <nav>
+    <div class="logo">
+      <i class="bx bx-menu menu-icon"></i>
+      <a  href="{{ url_for('homepage') }}" class="hideOnMobile">
+          <img src="/static/images/favicon_30.png" alt="logo" class="logo">
+      </a>
+    </div>
+    
+    <div class="sidebar">
       <div class="logo">
         <i class="bx bx-menu menu-icon"></i>
-        <a  href="{{ url_for('homepage') }}" class="hideOnMobile">
-            <img src="/static/images/favicon_30.png" alt="logo" class="logo">
-        </a>
+        <span class="logo-name">SplitShare</span>
       </div>
-      
-        <div class="sidebar">
-          <div class="logo">
-            <i class="bx bx-menu menu-icon"></i>
-            <span class="logo-name">SplitShare</span>
-          </div>
-  
-          <div class="sidebar-content">
-            <ul class="lists">
-              <li class="list">
-                <a href="{{ url_for('home') }}" class="nav-link">
-                  <i class="bx bx-home-alt icon"></i>
-                  <span class="link">Dashboard</span>
-                </a>
-              </li>
-  
-              <li class="list">
-                  <a href="{{ url_for('groups') }}" class="nav-link">
-                    
-                    <span class="link">Create Group</span>
-                  </a>
-                </li>
-  
-                <li class="list">
-                  <a href="{{ url_for('code') }}" class="nav-link">
-                    
-                    <span class="link">Join Group</span>
-                  </a>
-                </li>
-  
-              <li class="list">
-                <a href="{{ url_for('active_groups') }}" class="nav-link">
-                  <i class="bx bx-pie-chart-alt-2 icon"></i>
-                  <span class="link">Analytics</span>
-                </a>
-              </li>
-  
-              
-  
-              <li class="list">
-                <a href="{{ url_for('history') }}" class="nav-link">
-                  <i class="bx bx-time icon"></i> <!-- Changed icon here -->
-                  <span class="link">History</span>
-                </a>
-              </li>
-            </ul>
-  
-  
-            <div class="bottom-cotent">
-              <li class="list">
-                <a href="{{ url_for('profile') }}" class="nav-link">
-                  <i class="bx bx-user icon"></i> <!-- Changed icon here -->
-                  <span class="link">Profile</span>
-                </a>
-              </li>
-              <li class="list">
-                <a href="{{ url_for('base') }}" class="nav-link">
-                  <i class="bx bx-log-out icon"></i>
-                  <span class="link">Logout</span>
-                </a>
-              </li>
-            </div>
-          </div>
+
+      <div class="sidebar-content">
+        <ul class="lists">
+          <li class="list">
+            <a href="{{ url_for('home') }}" class="nav-link">
+              <i class="bx bx-home-alt icon"></i>
+              <span class="link">Dashboard</span>
+            </a>
+          </li>
+
+          <li class="list">
+              <a href="{{ url_for('groups') }}" class="nav-link">
+                
+                <span class="link">Create Group</span>
+              </a>
+            </li>
+
+            <li class="list">
+              <a href="{{ url_for('code') }}" class="nav-link">
+                
+                <span class="link">Join Group</span>
+              </a>
+            </li>
+
+            <li class="list">
+              <a href="{{ url_for('groups_expenses') }}" class="nav-link"> <!--Session link-->
+                <span class="link">Groups</span>
+              </a>
+            </li>
+
+          <li class="list">
+            <a href="{{ url_for('active_groups') }}" class="nav-link">
+              <i class="bx bx-pie-chart-alt-2 icon"></i>
+              <span class="link">Analytics</span>
+            </a>
+          </li>
+
+          
+
+          <li class="list">
+            <a href="{{ url_for('history') }}" class="nav-link">
+              <i class="bx bx-time icon"></i> <!-- Changed icon here -->
+              <span class="link">History</span>
+            </a>
+          </li>
+        </ul>
+
+
+        <div class="bottom-cotent">
+          <li class="list">
+            <a href="{{ url_for('profile') }}" class="nav-link">
+              <i class="bx bx-user icon"></i> <!-- Changed icon here -->
+              <span class="link">Profile</span>
+            </a>
+          </li>
+          <li class="list">
+            <a href="{{ url_for('base') }}" class="nav-link">
+              <i class="bx bx-log-out icon"></i>
+              <span class="link">Logout</span>
+            </a>
+          </li>
         </div>
-      </nav>
+      </div>
+    </div>
+  </nav>  
 
 
-
+<!-- -->
 <div class="qr">
     <h1>Create Group</h1>
     <form action="{{ url_for('groups') }}" method="POST">

@@ -1,141 +1,105 @@
-/* Import Google Fonts */
+/* Google Fonts - Poppins */
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap");
 
-/* General Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
 body {
-    font-family: 'Poppins', sans-serif;
-    background-color: #f4f4f4;
-    margin: 0;
-    padding: 0;
+  min-height: 100%;
+  background: whitesmoke;
 }
-
-/* Navigation Bar */
 nav {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    background: #fff;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    padding: 10px 20px;
-    display: flex;
-    align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 70px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  background: #fff;
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0.1);
 }
-
 nav .logo {
-    display: flex;
-    align-items: center;
-    text-decoration: none;
-    color: #333;
+  display: flex;
+  align-items: center;
+  margin: 0 24px;
 }
-
-nav .logo img {
-    height: 40px;
-    margin-right: 10px;
+.logo .menu-icon {
+  color: #333;
+  font-size: 24px;
+  margin-right: 14px;
+  cursor: pointer;
 }
-
-nav .logo .logo-name {
-    font-size: 24px;
-    font-weight: 500;
+.logo .logo-name {
+  color: #333;
+  font-size: 22px;
+  font-weight: 500;
 }
-
-/* Container Styling */
-.container {
-    margin-top: 10px; /* Space for the fixed nav */
-    padding: 50px;
-    max-width: 800px;
-    margin: 20px auto;
-    background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+nav .sidebar {
+  position: fixed;
+  top: 0;
+  left: -100%;
+  height: 100%;
+  width: 260px;
+  padding: 20px 0;
+  background-color: #fff;
+  box-shadow: 0 5px 1px rgba(0, 0, 0, 0.1);
+  transition: all 0.4s ease;
 }
-
-/* Group List Styling */
-.group-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+nav.open .sidebar {
+  left: 0;
 }
-
-.group-item {
-    border-bottom: 1px solid #ddd;
-    padding: 15px 0;
+.sidebar .sidebar-content {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 30px 16px;
 }
-
-.group-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+.sidebar-content .list {
+  list-style: none;
 }
-
-.action-buttons {
-    display: flex;
-    gap: 10px;
+.list .nav-link {
+  display: flex;
+  align-items: center;
+  margin: 8px 0;
+  padding: 14px 12px;
+  border-radius: 8px;
+  text-decoration: none;
 }
-
-.button {
-    display: inline-block;
-    padding: 10px 15px;
-    border-radius: 5px;
-    color: #fff;
-    background: #4070f4;
-    text-decoration: none;
-    font-size: 16px;
-    transition: background 0.3s ease;
+.lists .nav-link:hover {
+  background-color: #4070f4;
 }
-
-.button:hover {
-    background: #305bb5;
+.nav-link .icon {
+  margin-right: 14px;
+  font-size: 20px;
+  color: #707070;
 }
-
-.expense-list {
-    list-style: none;
-    padding: 0;
-    margin: 10px 0;
+.nav-link .link {
+  font-size: 16px;
+  color: #707070;
+  font-weight: 400;
 }
-
-.expense-item {
-    border: 1px solid #ddd;
-    padding: 10px;
-    margin-bottom: 10px;
-    border-radius: 5px;
-    background: #f9f9f9;
+.lists .nav-link:hover .icon,
+.lists .nav-link:hover .link {
+  color: #fff;
 }
-
-.expense-details {
-    margin-bottom: 10px;
+.overlay {
+  position: fixed;
+  top: 0;
+  left: -100%;
+  height: 1000vh;
+  width: 200%;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.4s ease;
+  background: rgba(0, 0, 0, 0.3);
 }
-
-.edit-link {
-    color: #4070f4;
-    text-decoration: none;
-}
-
-.edit-link:hover {
-    text-decoration: underline;
-}
-
-.members-list {
-    list-style: none;
-    padding: 0;
-    margin: 10px 0 0;
-}
-
-.end-group-form {
-    margin-top: 20px;
-}
-
-.end-group-button {
-    padding: 10px 15px;
-    border: none;
-    border-radius: 5px;
-    background: #f44336;
-    color: #fff;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background 0.3s ease;
-}
-
-.end-group-button:hover {
-    background: #d32f2f;
+nav.open ~ .overlay {
+  opacity: 1;
+  left: 260px;
+  pointer-events: auto;
 }
