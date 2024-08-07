@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settle Up</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f0f0f0;
+        }
+        h1 {
+            color: #0056b3;
+        }
+        form {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            margin: auto;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+        select, input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+        button {
+            background-color: #0056b3;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #004494;
+        }
+        .balance-list {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            margin: 20px auto;
+        }
+        .balance-item {
+            padding: 8px 0;
+            border-bottom: 1px solid #ddd;
+        }
+        .balance-item:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Settle Up</h1>
+
+    <!-- Form for settling up -->
+    <form action="{{ url_for('settle_up', room_id=room_id) }}" method="post">
+        <div>
+            <label for="payer">Payer:</label>
+            <select name="payer" id="payer" required>
+                {% for member in members %}
+                    <option value="{{ member.username }}">{{ member.username }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <label for="recipient">Recipient:</label>
+            <select name="recipient" id="recipient" required>
+                {% for member in members %}
+                    <option value="{{ member.username }}">{{ member.username }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <label for="amount">Amount:</label>
+            <input type="number" name="amount" id="amount" step="0.01" required>
+        </div>
+        <div>
+            <label for="date">Date:</label>
+            <input type="date" name="date" id="date" required>
+        </div>
+        <div>
+            <label for="payment_method">Payment Method:</label>
+            <select name="payment_method" id="payment_method" required>
+                <option value="cash">Cash</option>
+                <option value="e-wallet">E-Wallet (Gcash)</option>
+            </select>
+        </div>
+        <button type="submit">Save</button>
+    </form>
+
+    <!-- List of user balances -->
+    <div class="balance-list">
+        <h2>User Balances</h2>
+        {% for user in user_balances %}
+            <div class="balance-item">
+                {{ user.username }} - {{ user.balance }}
+            </div>
+        {% endfor %}
+    </div>
+    <script src="/static/js/settle.js"></script>
+</body>
+</html>

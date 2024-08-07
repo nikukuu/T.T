@@ -100,28 +100,28 @@
     </nav>
 
     <section class="home">
-        <div class="content">
-            <div class="owe-section">
-                <div class="owe">
-                    <h3>You Owe</h3>
-                    <p class="amount">₱{{ total_owed }}</p>
-                </div>
-    
-                <div class="who-owe">
-                    <h3>You are owed</h3>
-                    {% if borrowers %}
-                        <ul class="borrowers-list">
-                            {% for borrower in borrowers %}
-                                <li>{{ borrower['borrower'] }} - ₱{{ borrower['total_amount'] }}</li>
-                            {% endfor %}
-                        </ul>
-                    {% else %}
-                        <p>No users owe you money.</p>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </section>
+      <div class="content">
+          <div class="owe-section">
+              <div class="owe">
+                  <h3>You Owe</h3>
+                  <p class="amount">₱{{ total_owed }}</p>
+              </div>
+  
+              <div class="who-owe">
+                  <h3>You are owed</h3>
+                  {% if borrowers %}
+                      <ul class="borrowers-list">
+                          {% for borrower in borrowers %}
+                              <li>{{ borrower['borrower'] }} - ₱{{ borrower['total_amount'] }}</li>
+                          {% endfor %}
+                      </ul>
+                  {% else %}
+                      <p>No users owe you money.</p>
+                  {% endif %}
+              </div>
+          </div>
+      </div>
+  </section>
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {

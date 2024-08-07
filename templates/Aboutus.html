@@ -3,9 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About us</title>
+    <title>About Us</title>
+    <link rel="stylesheet" href="/static/css/butus.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css" rel="stylesheet" />
 </head>
 <body>
-    <p>I am miggy blas</p>
+    <header>
+        <nav>
+            <a href="{{ url_for('homepage') }}" class="logo">SplitShare</a>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('homepage') }}">Home</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="about-us">
+            <h1>About Us</h1>
+            <p>Welcome to SplitShare! We are a team dedicated to simplifying expense management for groups and individuals. Our platform helps you easily split expenses, manage group funds, and keep track of financial interactions.</p>
+            <div class="team">
+                <div class="team-member">
+                    <img src="/static/images/blas.jpg" alt="Team Member 1">
+                    <h2>Miggy Blas</h2>
+                    <p>Co-Founder & CEO</p>
+                </div>
+                <div class="team-member">
+                    <img src="/static/images/nicole.jpg" alt="Team Member 2">
+                    <h2>Nicole Mahilum</h2>
+                    <p>Co-Founder & CTO</p>
+                </div>
+                <div class="team-member">
+                    <img src="/static/images/mha.jpg" alt="Team Member 3">
+                    <h2>Mharian Rivera</h2>
+                    <p>Product Manager</p>
+                </div>
+            </div>
+            <div class="team-member">
+                <img src="/static/images/lau.jpg" alt="Team Member 3">
+                <h2>Lorenz Rivera</h2>
+                <p>Product Manager</p>
+            </div>
+        </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 SplitShare. All rights reserved.</p>
+    </footer>
 </body>
 </html>

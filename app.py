@@ -164,7 +164,7 @@ def sign_up():
 
         if existing_user:
             cur.close()
-            return render_template('sign_up.html', error='Username already exists. Please choose a different username.')
+            return render_template('base.html', error='Username already exists. Please choose a different username.')
 
         cur.execute("""
             INSERT INTO register (email, username, password, first_name, last_name, phone_number) 
@@ -276,6 +276,7 @@ def update_profile():
         return redirect(url_for('profile', success= 'You have successfully updated your profile!'))
 
     return render_template('profile.html', user=current_user)
+
 
 #logout    
 @app.route('/logout')
@@ -494,8 +495,7 @@ def join_by_code():
     else:
         return redirect(url_for('login'))
 
-#main function
-@app.route('/session/<int:room_id>', methods=['GET', 'POST'])
+@app.route('/session/<int:room_id>', methods=['GET', 'POST', 'PUT', 'DELETE'])
 @login_required
 def mainF(room_id):
     username = session.get('username')
@@ -527,16 +527,12 @@ def mainF(room_id):
     expenses = cur.fetchall()
     has_expenses = len(expenses) > 0
 
-    # Handle expense addition
     if request.method == 'POST' and request.is_json:
+        # Handle expense addition
         data = request.get_json()
         description = data.get('description')
         expense = data.get('expense')
         paid_by = data.get('paid_by')
-
-        # Debugging statements
-        print(f"Received data: {data}")
-        print(f"description: {description}, expense: {expense}, paid_by: {paid_by}")
 
         if description and expense and paid_by:
             try:
@@ -572,10 +568,89 @@ def mainF(room_id):
                 }), 201
             except Exception as e:
                 mysql.connection.rollback()
-                print(f"Database error: {e}")  # Debugging statement
                 return jsonify({'error': str(e)}), 500
 
         return jsonify({'error': 'Invalid input'}), 400
+
+    elif request.method == 'PUT' and request.is_json:
+        # Handle expense editing
+        data = request.get_json()
+        expense_id = data.get('expense_id')
+        description = data.get('description')
+        amount = data.get('amount')
+        paid_by = data.get('paid_by')
+
+        try:
+            # Update the expense in the database
+            cur.execute("""
+                UPDATE expenses 
+                SET description = %s, amount = %s, paid_by = %s 
+                WHERE id = %s AND room_id = %s
+            """, (description, amount, paid_by, expense_id, room_id))
+            mysql.connection.commit()
+
+            # Recalculate debts
+            cur.execute("DELETE FROM debts WHERE room_id = %s AND description = %s", (room_id, description))
+            mysql.connection.commit()
+
+            cur.execute("SELECT username FROM members WHERE room_id = %s", (room_id,))
+            members = cur.fetchall()
+            num_members = len(members)
+            split_amount = amount / num_members
+
+            for member in members:
+                borrower = member['username']
+                if borrower != paid_by:
+                    cur.execute("""
+                        INSERT INTO debts (room_id, lender, borrower, amount, description)
+                        VALUES (%s, %s, %s, %s, %s)
+                    """, (room_id, paid_by, borrower, split_amount, description))
+
+            # Log the activity
+            cur.execute("""
+                INSERT INTO activity_logs (username, activity, room_id)
+                VALUES (%s, %s, %s)
+            """, (username, f"{username} edited the expense {description} in group {room_info['group_name']}", room_id))
+
+            mysql.connection.commit()
+
+            return jsonify({
+                'description': description,
+                'amount': amount,
+                'paid_by': paid_by
+            }), 200
+
+        except Exception as e:
+            mysql.connection.rollback()
+            return jsonify({'error': str(e)}), 500
+
+    elif request.method == 'DELETE':
+        # Handle expense removal
+        expense_id = request.args.get('expense_id')
+        if not expense_id:
+            return jsonify({'error': 'No expense ID provided'}), 400
+
+        try:
+            cur.execute("DELETE FROM expenses WHERE id = %s AND room_id = %s", (expense_id, room_id))
+            mysql.connection.commit()
+
+            # Remove related debts
+            cur.execute("DELETE FROM debts WHERE room_id = %s AND expense_id = %s", (room_id, expense_id))
+            mysql.connection.commit()
+
+            # Log the activity
+            cur.execute("""
+                INSERT INTO activity_logs (username, activity, room_id)
+                VALUES (%s, %s, %s)
+            """, (username, f"Removed an expense", room_id))
+
+            mysql.connection.commit()
+
+            return jsonify({'success': 'Expense removed'}), 200
+
+        except Exception as e:
+            mysql.connection.rollback()
+            return jsonify({'error': str(e)}), 500
 
     # Handle settlement
     if request.method == 'POST' and 'payer' in request.form:
@@ -606,56 +681,6 @@ def mainF(room_id):
 
         return redirect(url_for('mainF', room_id=room_id))
 
-    # Handle expense editing
-    if request.method == 'POST' and 'edit_expense_id' in request.form:
-        expense_id = int(request.form['edit_expense_id'])
-        description = request.form['description']
-        amount = float(request.form['amount'])
-        paid_by = request.form['paid_by']
-
-        try:
-            # Update the expense in the database
-            cur.execute("""
-                UPDATE expenses 
-                SET description = %s, amount = %s, paid_by = %s 
-                WHERE id = %s
-            """, (description, amount, paid_by, expense_id))
-            mysql.connection.commit()
-
-            # Recalculate debts
-            cur.execute("SELECT room_id FROM expenses WHERE id = %s", (expense_id,))
-            room_id = cur.fetchone()['room_id']
-
-            cur.execute("DELETE FROM debts WHERE room_id = %s AND description = %s", (room_id, description))
-            mysql.connection.commit()
-
-            cur.execute("SELECT username FROM members WHERE room_id = %s", (room_id,))
-            members = cur.fetchall()
-            num_members = len(members)
-            split_amount = amount / num_members
-
-            for member in members:
-                borrower = member['username']
-                if borrower != paid_by:
-                    cur.execute("""
-                        INSERT INTO debts (room_id, lender, borrower, amount, description)
-                        VALUES (%s, %s, %s, %s, %s)
-                    """, (room_id, paid_by, borrower, split_amount, description))
-
-            # Log the activity
-            cur.execute("""
-                INSERT INTO activity_logs (username, activity, room_id)
-                VALUES (%s, %s, %s)
-            """, (username, f"{username} edited the expense {description} in group {room_info['group_name']}", room_id))
-
-            mysql.connection.commit()
-
-        except Exception as e:
-            mysql.connection.rollback()
-            flash(f"An error occurred: {e}", "error")
-
-        return redirect(url_for('mainF', room_id=room_id))
-
     cur.close()
 
     success = request.args.get('success', None)
@@ -663,6 +688,61 @@ def mainF(room_id):
     return render_template('session.html', room_id=room_id, members=members, expenses=expenses,
                            has_expenses=has_expenses, username=username, room_info=room_info, success=success,
                            created_at=created_at, is_creator=is_creator)
+
+#Dito
+@app.route('/settle/<room_id>', methods=['GET', 'POST'])
+def settle_up(room_id):
+    if request.method == 'POST':
+        payer = request.form['payer']
+        recipient = request.form['recipient']
+        amount = float(request.form['amount'])
+        date = request.form['date']
+        payment_method = request.form['payment_method']
+        
+        # Update balances
+        update_user_balance(payer, -amount)  # Deduct amount from payer
+        update_user_balance(recipient, amount)  # Add amount to recipient
+        
+        # Redirect to GET request to fetch updated data
+        return redirect(url_for('settle_up', room_id=room_id))
+    
+    # For GET requests, render the page with user balances
+    members = get_members(room_id)
+    user_balances = get_user_balances(room_id)
+    
+    return render_template('settle.html', room_id=room_id, members=members, user_balances=user_balances)
+
+def get_user_balances(room_id):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        SELECT u.username, u.balance 
+        FROM register u 
+        JOIN room_members rm ON u.id = rm.user_id 
+        WHERE rm.room_id = %s
+    """, (room_id,))
+    user_balances = cur.fetchall()
+    cur.close()
+    return [{'username': user[0], 'balance': user[1]} for user in user_balances]
+
+def update_user_balance(username, amount):
+    cur = mysql.connection.cursor()
+    cur.execute("UPDATE register SET balance = balance + %s WHERE username = %s", (amount, username))
+    mysql.connection.commit()
+    cur.close()
+
+def get_members(room_id):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        SELECT u.username 
+        FROM register u 
+        JOIN room_members rm ON u.id = rm.user_id 
+        WHERE rm.room_id = %s
+    """, (room_id,))
+    members = cur.fetchall()
+    cur.close()
+    return [{'username': member[0]} for member in members]
+#Hanggang dito
+
 
 
 @app.route('/groups_list')
@@ -672,12 +752,13 @@ def groups_list():
     cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     
     try:
+            
         cur.execute("""
-            SELECT r.room_id, r.group_name, r.creator, r.created_at
-            FROM rooms r
-            JOIN members m ON r.room_id = m.room_id
-            WHERE m.username = %s
-            ORDER BY r.created_at DESC
+            SELECT rooms.room_id, rooms.group_name
+            FROM rooms 
+            JOIN members ON rooms.room_id = members.room_id 
+            WHERE members.username = %s AND rooms.is_active = 1
+            ORDER BY rooms.created_at DESC
         """, (username,))
         groups = cur.fetchall()
     except MySQLdb.Error as e:
@@ -903,7 +984,7 @@ def end_group(room_id):
         
         # Get the members of the group
         members = get_room_members(room_id)
-        return redirect(url_for('groups_expenses', room_id=room_id, members=members, username=username))
+        return redirect(url_for('groups_list', room_id=room_id, members=members, username=username))
     else:
         return redirect(url_for('login'))
 

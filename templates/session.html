@@ -16,32 +16,36 @@
     </div>
 
     <div class="container">
-            <h3 class="group-name">{{ room_info['group_name'] }}</h3>
-            <h5 class="Date">{{ created_at }}</h5>
+        <h3 class="group-name">{{ room_info['group_name'] }}</h3>
+        <h5 class="date">{{ created_at }}</h5>
 
-            <div class="expense-list">
-                {% if has_expenses %}
-                    {% for expense in expenses %}
-                        <div class="expense-item">
-                            <div class="price">{{ expense.amount }}</div>
-                            <div class="item">{{ expense.description }}</div>
-                            <div class="paid-by">Paid by: {{ expense.paid_by }}</div>
-                            <button class="edit-expense">Edit</button>
-                            <button>Remove</button>
-                        </div>
-                    {% endfor %}
-                {% else %}
-                    <p>No expenses yet.</p>
-                {% endif %}
-            </div>
+        <div class="expense-list">
+            {% if has_expenses %}
+                {% for expense in expenses %}
+                    <div class="expense-item" data-id="{{ expense.id }}">
+                        <div class="price">{{ expense.amount }}</div>
+                        <div class="item">{{ expense.description }}</div>
+                        <div class="paid-by">Paid by: {{ expense.paid_by }}</div>
+                        <button class="edit-expense">Edit</button>
+                        <button class="remove-expense">Remove</button>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No expenses yet.</p>
+            {% endif %}
+        </div>
 
         <div class="button-container">
             <button class="add-expense">Add an expense</button>
-            <button class="settle-up">Settle up</button>
+        <a href="{{ url_for('settle') }}">
+                <button class="settle-up">Settle up</button>
+        </a>
         </div>
 
         <div class="end-session-container">
-            <button class="end-session">End Session</button>
+            <form action="{{ url_for('end_group', room_id=room_id) }}" method="post">
+                <button class="end-session" type="submit">End Session</button>
+            </form>
         </div>
     </div>
 
@@ -49,7 +53,7 @@
         <div class="popup-content">
             <span class="close">&times;</span>
             <h3>Add an Expense</h3>
-            <form id="add-expense-form">
+            <form id="add-expense-form" action="{{ url_for('mainF', room_id=room_id) }}" method="POST">
                 <label for="description">Description:</label>
                 <input type="text" id="description" name="description" required>
 
@@ -62,6 +66,7 @@
                         <option value="{{ member.username }}">{{ member.username }}</option>
                     {% endfor %}
                 </select>
+                
                 <div id="custom-amount-container" style="display: none;">
                     <label for="custom-amount">Enter amount:</label>
                     <input type="number" id="custom-amount" name="custom-amount" step="0.01">
@@ -76,63 +81,53 @@
         <div class="popup-content">
             <span class="close">&times;</span>
             <h3>Edit Expense</h3>
-            <form id="edit-expense-form">
-                <input type="hidden" id="edit-expense-id">
-                <label for="edit-description">Description:</label>
-                <input type="text" id="edit-description" name="description" required>
-    
-                <label for="edit-amount">Amount:</label>
-                <input type="number" id="edit-amount" name="amount" step="0.01" required>
-    
-                <label for="edit-paid-by">Paid by:</label>
-                <select id="edit-paid-by" name="paid-by" required></select>
-    
-                <button type="submit">Save Changes</button>
-                <button type="button" id="cancel-edit-expense">Cancel</button>
+            <form id="editExpenseForm" action="{{ url_for('mainF', room_id=room_id) }}" method="POST">
+                <input type="hidden" name="expense_id" id="expense_id">
+                <label for="edit_description">Enter description:</label>
+                <input type="text" name="description" id="edit_description" required>
+                
+                <label for="edit_amount">Expense:</label>
+                <input type="number" step="0.01" name="amount" id="edit_amount" required>
+
+                <label for="edit_paid_by">Paid by:</label>
+                <select name="paid_by" id="edit_paid_by" required>
+                    {% for member in members %}
+                        <option value="{{ member.username }}">{{ member.username }}</option>
+                    {% endfor %}
+                </select>
+                
+                <button type="submit">Update Expense</button>
+                <button type="button" class="cancel-btn" id="cancelEditExpense">Cancel</button>
             </form>
         </div>
     </div>
 
-    <div id="custom-amount-popup" class="popup">
-        <div class="popup-content">
-            <span class="close">&times;</span>
-            <h3>Custom Split Amount</h3>
-            <form id="custom-amount-form">
-                <label for="custom-amount">Enter amount:</label>
-                <input type="number" id="custom-amount" name="custom-amount" step="0.01" required>
-
-                <button type="submit">Save</button>
-                <button type="button" id="cancel-custom-amount">Cancel</button>
-            </form>
-        </div>
-    </div>
-
-    <div id="settle-method-popup" class="popup">
-        <div class="popup-content">
-            <span class="close">&times;</span>
-            <h3>Choose Payment Method</h3>
-            <button id="cash">Cash</button>
-            <button id="e-wallet">E-wallet</button>
-        </div>
-    </div>
 
     <div id="settle-details-popup" class="popup">
         <div class="popup-content">
             <span class="close">&times;</span>
             <h3>Settlement Details</h3>
-            <form id="settle-details-form">
-                <label for="settle-paid-by">Paid by:</label>
-                <select id="settle-paid-by" name="paid-by" required></select>
-
-                <label for="settle-paid-to">Paid to:</label>
-                <select id="settle-paid-to" name="paid-to" required></select>
-
+            <form id="settle-form">
+                <label for="payer">Paid by:</label>
+                <select name="payer" id="payer" required>
+                    {% for member in members %}
+                        <option value="{{ member.username }}">{{ member.username }}</option>
+                    {% endfor %}
+                </select>
+    
+                <label for="recipient">Paid to:</label>
+                <select name="recipient" id="recipient" required>
+                    {% for member in members %}
+                        <option value="{{ member.username }}">{{ member.username }}</option>
+                    {% endfor %}
+                </select>
+    
                 <label for="amount-paid">Amount:</label>
                 <input type="number" id="amount-paid" name="amount-paid" step="0.01" required>
-
+    
                 <label for="date">Date:</label>
                 <input type="date" id="date" name="date" required>
-
+    
                 <button type="submit">Save</button>
                 <button type="button" id="cancel-settle-details">Cancel</button>
             </form>
@@ -178,8 +173,12 @@
                 // Close the popup and reset the form
                 document.getElementById('add-expense-popup').style.display = 'none';
                 document.getElementById('add-expense-form').reset();
+
+                window.location.reload();
+
             } else {
-                alert("Failed to add expense.");
+                alert("Success!");
+                window.location.reload();
             }
         };
     
@@ -195,7 +194,6 @@
             document.getElementById('add-expense-popup').style.display = 'block';
         };
     </script>    
-    
 
 </body>
 </html>
