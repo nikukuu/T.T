@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SplitShare</title>
-    <link rel="stylesheet" href="/static/css/group.css">
+    <link rel="stylesheet" href="/static/css/active_groups.css">
     <link
-    href="https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css"
-    rel="stylesheet"
-  />
-  <link rel="icon" type="image/png" href="/static/images/favicon40.png">
+        href="https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css"
+        rel="stylesheet"
+    />
+    <link rel="icon" type="image/png" href="/static/images/favicon40.png">
 </head>
 <body>
 
@@ -48,7 +48,7 @@
                 <i class="bx bx-code-alt icon"></i> <!-- Icon for Join Group -->
                 Join Group
               </a>
-              <a href="{{ url_for('groups_expenses') }}" class="nav-link">
+              <a href="{{ url_for('groups_list') }}" class="nav-link">
                 <i class="bx bx-calendar icon"></i> <!-- Icon for Groups -->
                 Groups
               </a>
@@ -94,42 +94,35 @@
         </div>
       </div>
     </div>
-  </nav> 
+  </nav>
+    
+    <div class="Rooms">
+          <h3>Your Active Groups</h3>
+          {% if groups %}
+          <ul>
+              {% for group in groups %}
+                  <li>
+                      <a href="{{ url_for('group_redirect', room_id=group.room_id) }}">{{ group.group_name }}</a>
+                  </li>
+              {% endfor %}
+          </ul>
+      {% else %}
+          <p>You are not a member of any groups.</p>
+      {% endif %}
+    </div>
 
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+          const dashboardToggle = document.getElementById('dashboard-toggle');
+          const dropdownMenu = document.getElementById('dropdown-menu');
+          const icon = dashboardToggle.querySelector('.bx-chevron-down');
 
-<!-- -->
-<div class="qr">
-    <h1>Create Group</h1>
-    <form action="{{ url_for('groups') }}" method="POST">
-        <label for="group_name">Group Name:</label>
-        <input type="text" id="group_name" name="group_name" required>
-        <button type="submit" name="action" value="create_group">Create Group</button>
-    </form>
-
-    {% if qr_code_url and room_id %}
-        <h2>QR Code for your group:</h2>
-        <img src="{{ qr_code_url }}" alt="QR Code">
-        <p>Room ID: {{ room_id }}</p>
-        <a href="{{ url_for('session', room_id=room_id) }}">Add expenses</a>
-    {% endif %}
-
-</div>
-
-<script>
-  document.addEventListener("DOMContentLoaded", function() {
-      const dashboardToggle = document.getElementById('dashboard-toggle');
-      const dropdownMenu = document.getElementById('dropdown-menu');
-      const icon = dashboardToggle.querySelector('.bx-chevron-down');
-
-      dashboardToggle.addEventListener('click', function() {
-          dropdownMenu.classList.toggle('show');
-          icon.classList.toggle('rotate');
+          dashboardToggle.addEventListener('click', function() {
+              dropdownMenu.classList.toggle('show');
+              icon.classList.toggle('rotate');
+          });
       });
-  });
-</script>
+  </script>
     <script src="/static/js/dashboard.js"></script>
-
-
-
 </body>
 </html>

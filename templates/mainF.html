@@ -4,60 +4,290 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Main Function</title>
-    <link rel="stylesheet" href="/static/css/mainF.css"> 
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.4);
+            padding-top: 60px;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 10px 0;
+        }
+
+        .edit-btn {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .edit-btn:hover {
+            background-color: #45a049;
+        }
+
+        .cancel-btn {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .cancel-btn:hover {
+            background-color: #d32f2f;
+        }
+    </style>
 </head>
 <body>
-    
-    <main>
-        
-        <div class="container">
-            {% if success == 'True' %}
-                <p class="success-message">Expense successfully added!</p>
-            {% elif success == 'False' %}
-                <p class="error-message">Failed to add expense. Please try again.</p>
-            {% endif %}
+    <h1>Main Function</h1>
 
-            <hr>
+    {% if success == 'True' %}
+        <p>Expense successfully added!</p>
+    {% elif success == 'False' %}
+        <p>Failed to add expense. Please try again.</p>
+    {% endif %}
 
-            {% if room_id %}
-                <p>Room ID: {{ room_id }}</p>
-                <h2>Members who have joined:</h2>
-                <ul>
-                    {% for member in members %}
-                        <li>{{ member.username }}</li>
-                    {% endfor %}
-                </ul>
-            {% else %}
-                <p>No rooms have been created yet.</p>
-            {% endif %}
-            
-            <hr>
+    <hr>
 
-            {% if username == room_info.creator %}
-                <form action="{{ url_for('add_expense') }}" method="POST">
-                    <div class="form-group">
-                        <label for="description">Enter description:</label>
-                        <input type="text" name="description" id="description" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="expense">Expense:</label>
-                        <input type="number" step="0.01" name="expense" id="expense" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="paid_by">Paid by:</label>
-                        <select name="paid_by" id="paid_by" required>
+    {% if room_id %}
+        <p>Room ID: {{ room_id }}</p>
+        <h2>Members who have joined:</h2>
+        <ul>
+            {% for member in members %}
+                <li>{{ member.username }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No rooms have been created yet.</p>
+    {% endif %}
+
+    <hr>
+
+    {% if username == room_info.creator %}
+        <button id="addExpenseBtn">Add Expense</button>
+
+        {% if has_expenses %}
+            <button id="settleUpBtn">Settle Up</button>
+        {% endif %}
+
+        <!-- Add Expense Modal -->
+        <div id="addExpenseModal" class="modal">
+            <div class="modal-content">
+                <span class="close" id="closeAddExpense">&times;</span>
+                <h2>Add Expense</h2>
+                <form action="{{ url_for('mainF', room_id=room_id) }}" method="POST">
+                    <p>Enter description:</p>
+                    <input type="text" name="description" required>
+                    <p>Expense: ₱<input type="number" step="0.01" name="expense" required></p>
+                    <p>Paid by:
+                        <select name="paid_by" required>
+                            {% for member in members %}
+                                <option value="{{ member.username }}">{{ member.username }}</option>
+                            {% endfor %}
+                        </select>
+                    </p>
+                    <button type="submit">Add Expense</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Settle Up Modal -->
+        <div id="settleUpModal" class="modal">
+            <div class="modal-content">
+                <span class="close" id="closeSettleUp">&times;</span>
+                <h2>Settle Up</h2>
+                <form action="{{ url_for('mainF', room_id=room_id) }}" method="post">
+                    <div>
+                        <label for="payer">Payer:</label>
+                        <select name="payer" id="payer" required>
                             {% for member in members %}
                                 <option value="{{ member.username }}">{{ member.username }}</option>
                             {% endfor %}
                         </select>
                     </div>
-                    <input type="hidden" name="room_id" value="{{ room_id }}">
-                    <button type="submit" class="submit-button">Add Expense</button>
+                    <div>
+                        <label for="recipient">Recipient:</label>
+                        <select name="recipient" id="recipient" required>
+                            {% for member in members %}
+                                <option value="{{ member.username }}">{{ member.username }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <label for="amount">Amount:</label>
+                        <input type="number" name="amount" id="amount" step="0.01" required>
+                    </div>
+                    <div>
+                        <label for="date">Date:</label>
+                        <input type="date" name="date" id="date" required>
+                    </div>
+                    <div>
+                        <label for="payment_method">Payment Method:</label>
+                        <select name="payment_method" id="payment_method" required>
+                            <option value="cash">Cash</option>
+                            <option value="e-wallet">E-Wallet (Gcash)</option>
+                        </select>
+                    </div>
+                    <button type="submit">Save</button>
                 </form>
-            {% endif %}
+            </div>
         </div>
-    </main>
 
-    <script src="/static/js/script.js"></script> 
+        <!-- End Group Form -->
+        <form action="{{ url_for('end_group', room_id=room_id) }}" method="post">
+            <button type="submit">End Group</button>
+        </form>
+    {% endif %}
+
+    <hr>
+
+    <h2>Expenses</h2>
+    {% if has_expenses %}
+        <ul>
+            {% for expense in expenses %}
+                <li>
+                    {{ expense.description }}
+                    <ul>
+                        <li>Amount: ₱{{ expense.amount }}</li>
+                        <li>{{ expense.paid_by }} paid ₱{{ expense.amount }}</li>
+                        <li>Added on: {{ expense.created_at.strftime('%b %d, %Y') }}</li>
+                        {% if username == room_info.creator %}
+                            <button class="edit-btn" onclick="openEditExpenseModal({{ expense.id }}, '{{ expense.description }}', {{ expense.amount }}, '{{ expense.paid_by }}')">Edit Expense</button>
+                        {% endif %}
+                        <ul>
+                            {% for member in members %}
+                                <li>{{ member.username }} owes ₱{{ (expense.amount / members|length) | round(2) }}</li>
+                            {% endfor %}
+                        </ul>
+                    </ul>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No expenses yet.</p>
+    {% endif %}
+
+    <a href="{{ url_for('groups_list') }}">Back</a>
+
+    <!-- Edit Expense Modal -->
+    <div id="editExpenseModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeEditExpense">&times;</span>
+            <h2>Edit Expense</h2>
+            <form id="editExpenseForm" action="{{ url_for('mainF', room_id=room_id) }}" method="POST">
+                <input type="hidden" name="expense_id" id="expense_id">
+                <p>Enter description:</p>
+                <input type="text" name="description" id="edit_description" required>
+                <p>Expense: ₱<input type="number" step="0.01" name="amount" id="edit_amount" required></p>
+                <p>Paid by:
+                    <select name="paid_by" id="edit_paid_by" required>
+                        {% for member in members %}
+                            <option value="{{ member.username }}">{{ member.username }}</option>
+                        {% endfor %}
+                    </select>
+                </p>
+                <button type="submit">Update Expense</button>
+                <button type="button" class="cancel-btn" id="cancelEditExpense">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Get the modal elements
+        var addExpenseModal = document.getElementById("addExpenseModal");
+        var settleUpModal = document.getElementById("settleUpModal");
+        var editExpenseModal = document.getElementById("editExpenseModal");
+
+        // Get the button elements that open the modals
+        var addExpenseBtn = document.getElementById("addExpenseBtn");
+        var settleUpBtn = document.getElementById("settleUpBtn");
+
+        // Get the <span> elements that close the modals
+        var closeAddExpense = document.getElementById("closeAddExpense");
+        var closeSettleUp = document.getElementById("closeSettleUp");
+        var closeEditExpense = document.getElementById("closeEditExpense");
+
+        // Get the cancel button
+        var cancelEditExpense = document.getElementById("cancelEditExpense");
+
+        // When the user clicks the button, open the respective modal
+        addExpenseBtn.onclick = function() {
+            addExpenseModal.style.display = "block";
+        }
+
+        settleUpBtn.onclick = function() {
+            settleUpModal.style.display = "block";
+        }
+
+        // When the user clicks on <span> (x), close the respective modal
+        closeAddExpense.onclick = function() {
+            addExpenseModal.style.display = "none";
+        }
+
+        closeSettleUp.onclick = function() {
+            settleUpModal.style.display = "none";
+        }
+
+        closeEditExpense.onclick = function() {
+            editExpenseModal.style.display = "none";
+        }
+
+        // When the user clicks outside of the modal content, close the modal
+        window.onclick = function(event) {
+            if (event.target == addExpenseModal) {
+                addExpenseModal.style.display = "none";
+            }
+            if (event.target == settleUpModal) {
+                settleUpModal.style.display = "none";
+            }
+            if (event.target == editExpenseModal) {
+                editExpenseModal.style.display = "none";
+            }
+        }
+
+        function openEditExpenseModal(id, description, amount, paidBy) {
+            document.getElementById("expense_id").value = id;
+            document.getElementById("edit_description").value = description;
+            document.getElementById("edit_amount").value = amount;
+            document.getElementById("edit_paid_by").value = paidBy;
+            editExpenseModal.style.display = "block";
+        }
+    </script>
 </body>
 </html>

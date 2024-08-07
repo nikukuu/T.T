@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+
 /* Google Fonts - Poppins */
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap");
 
@@ -9,11 +11,56 @@
 }
 
 body {
-  min-height: 100%;
   background: whitesmoke;
-  font-family: "Poppins", sans-serif;
+  color: var(--text-color);
+  padding: 20px;
+  font-size: 16px;
 }
 
+h1 {
+  color: var(--primary-color);
+  margin-bottom: 20px;
+  font-size: 24px;
+  text-align: center;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+.activity-item {
+  background: #fff;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  margin-bottom: 15px;
+  padding: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.activity-description {
+  display: block;
+  font-weight: 500;
+  color: var(--text-color);
+}
+
+.activity-time {
+  display: block;
+  color: #666;
+  font-size: 14px;
+}
+
+a {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Navbar styles */
 nav {
   position: fixed;
   top: 0;
@@ -48,7 +95,7 @@ nav .logo {
 nav .sidebar {
   position: fixed;
   top: 0;
-  left: -260px;
+  left: -100%;
   height: 100%;
   width: 260px;
   padding: 20px 0;
@@ -80,79 +127,51 @@ nav.open .sidebar {
   padding: 14px 12px;
   border-radius: 8px;
   text-decoration: none;
-  color: #707070; /* Default text color */
+  color: #707070;
+  font-size: 16px;
+  font-weight: 400;
 }
 
 .lists .nav-link:hover {
-  background-color: #4070f4; /* Background color on hover */
-  color: #fff; /* Text color on hover */
+  background-color: #4070f4;
 }
 
 .nav-link .icon {
   margin-right: 14px;
   font-size: 20px;
+  color: #707070;
 }
 
 .nav-link .link {
   font-size: 16px;
+  color: #707070;
   font-weight: 400;
 }
 
-/* Profile and Logout links in the bottom-content */
-.bottom-content .nav-link {
-  background-color: transparent; /* Remove background color */
-  color: #707070; /* Default text color */
+.lists .nav-link:hover .icon,
+.lists .nav-link:hover .link {
+  color: #fff;
 }
 
-.bottom-content .nav-link:hover {
-  background-color: transparent; /* Remove background color change on hover */
-  color: #707070; /* Keep text color same on hover */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: -100%;
+  height: 1000vh;
+  width: 200%;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.4s ease;
+  background: rgba(0, 0, 0, 0.3);
 }
 
-.bottom-content .nav-link .icon {
-  color: #707070; /* Default icon color */
+nav.open ~ .overlay {
+  opacity: 1;
+  left: 260px;
+  pointer-events: auto;
 }
 
-.bottom-content .nav-link:hover .icon {
-  color: #707070; /* Keep icon color same on hover */
-}
-
-.container {
-  margin-left: 260px; /* Make room for the sidebar */
-  padding: 20px;
-}
-
-.Rooms {
-  margin: 80px 20px; /* Adjust top margin to make space for the fixed nav */
-  padding: 20px;
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.Rooms h3 {
-  margin-bottom: 20px;
-}
-
-.Rooms ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-.Rooms ul li {
-  margin-bottom: 10px;
-}
-
-.Rooms ul li a {
-  text-decoration: none;
-  color: #007bff;
-  font-weight: bold;
-}
-
-.Rooms ul li a:hover {
-  text-decoration: underline;
-}
-
+/* Dropdown Menu Styles */
 .dropdown-content {
   display: none;
   max-height: 0;
@@ -205,33 +224,5 @@ nav.open .sidebar {
 }
 
 .dropdown-content a:hover .icon {
-  color: #fff; /* Icon color on hover */
-}
-
-/* Ensure Dashboard link is unaffected */
-.nav-link {
-  display: flex;
-  align-items: center;
-  margin: 8px 0;
-  padding: 14px 12px;
-  border-radius: 8px;
-  text-decoration: none;
-  color: #707070; /* Match the text color */
-  font-size: 16px;
-  font-weight: 400;
-}
-
-.nav-link:hover {
-  background-color: #4d84e2; /* Match the hover color of other nav links */
-  color: #fff; /* Text color on hover */
-}
-
-.nav-link .icon {
-  margin-right: 14px;
-  font-size: 20px;
-  color: #707070; /* Match the icon color */
-}
-
-.nav-link:hover .icon {
   color: #fff; /* Icon color on hover */
 }
