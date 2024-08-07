@@ -48,7 +48,7 @@
                 <i class="bx bx-code-alt icon"></i> <!-- Icon for Join Group -->
                 Join Group
               </a>
-              <a href="{{ url_for('groups_expenses') }}" class="nav-link">
+              <a href="{{ url_for('groups_list') }}" class="nav-link">
                 <i class="bx bx-calendar icon"></i> <!-- Icon for Groups -->
                 Groups
               </a>
@@ -110,7 +110,7 @@
         <h2>QR Code for your group:</h2>
         <img src="{{ qr_code_url }}" alt="QR Code">
         <p>Room ID: {{ room_id }}</p>
-        <a href="{{ url_for('session', room_id=room_id) }}">Add expenses</a>
+        <a href="{{ url_for('mainF', room_id=room_id) }}">Add expenses</a>
     {% endif %}
 
 </div>

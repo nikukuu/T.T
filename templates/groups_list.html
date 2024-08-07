@@ -97,18 +97,18 @@
   </nav>
     
     <div class="Rooms">
-          <h3>Your Active Groups</h3>
-          {% if groups %}
-          <ul>
-              {% for group in groups %}
-                  <li>
-                      <a href="{{ url_for('group_redirect', room_id=group.room_id) }}">{{ group.group_name }}</a>
-                  </li>
-              {% endfor %}
-          </ul>
-      {% else %}
-          <p>You are not a member of any groups.</p>
-      {% endif %}
+        <h3>Your Active Groups</h3>
+        {% if groups %}
+        <ul>
+            {% for group in groups %}
+                <li>
+                    <a href="{{ url_for('group_redirect', room_id=group.room_id) }}">{{ group.group_name }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>You do not have any groups yet.</p>
+    {% endif %}
     </div>
 
     <script>

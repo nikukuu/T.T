@@ -86,15 +86,21 @@
     </nav>
 
     <main>
-        <h1>Activity Log</h1>
-        <ul>
-            {% for activity in activities %}
-                <li class="activity-item">
-                    <span class="activity-description">{{ activity.activity }}</span>
-                    <span class="activity-time">{{ activity.activity_time }}</span>
-                </li>
-            {% endfor %}
-        </ul>
+        <div>
+            <h1>Activity Log</h1>
+            {% if groups %}
+            <ul>
+                {% for activity in activities %}
+                    <li class="activity-item">
+                        <span class="activity-description">{{ activity.activity }}</span>
+                        <span class="activity-time">{{ activity.activity_time }}</span>
+                    </li>
+                {% endfor %}
+            {% else %}
+                <p>There is no activity in your account yet. Try adding an expense!</p>
+            {% endif %}
+            </ul>
+        </div>
     </main>
 
     <script>
